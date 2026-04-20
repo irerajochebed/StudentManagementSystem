@@ -1,5 +1,5 @@
 ## Student Management System (Java OOP Project)
-###Project Overview
+### Project Overview
 
 This project is a Student Management System developed in Java to demonstrate the core principles of Object-Oriented Programming (OOP).
 
@@ -11,14 +11,14 @@ The system models a real-world university environment where:
     Grades are assigned and GPA is calculated
 
 The focus of this project is clean class design, real-world modeling, and proper implementation of OOP principles.
-###Objectives
+### Objectives
 
     Apply OOP principles in a real-world scenario
     Design logical relationships between classes
     Demonstrate Encapsulation, Abstraction, Inheritance, and Polymorphism
     Use standard for loops (no for-each loops)
 
-###Project Structure
+### Project Structure
 
 The system includes the following classes:
 Class	Description
@@ -30,7 +30,7 @@ Enrollment	Links Student and Course (many-to-many relationship)
 Department	Manages instructors and courses
 Main	Runs and demonstrates the system
 
-##OOP Concepts Implemented
+## OOP Concepts Implemented
   1. Encapsulation
 
     All fields are declared private
