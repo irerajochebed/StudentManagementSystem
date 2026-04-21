@@ -1,6 +1,4 @@
-
 public abstract class Person {
-
 
     private String personId;
     private String firstName;
@@ -11,41 +9,48 @@ public abstract class Person {
 
     public Person(String personId, String firstName, String lastName,
                   String email, int age) {
-        this.personId  = personId;
+
+
+        if (email == null || !email.contains("@") || !email.contains(".")) {
+            throw new InvalidEmailException(email == null ? "null" : email);
+        }
+
+
+        if (age < 16 || age > 100) {
+            throw new InvalidAgeException(age);
+        }
+
+        this.personId = personId;
         this.firstName = firstName;
-        this.lastName  = lastName;
-        this.email     = email;
-        this.age       = age;
+        this.lastName = lastName;
+        this.email = email;
+        this.age = age;
     }
 
-
     public abstract String getRole();
-
     public abstract void displayInfo();
 
-
-    public String getPersonId()  { return personId;  }
+    // Getters
+    public String getPersonId() { return personId; }
     public String getFirstName() { return firstName; }
-    public String getLastName()  { return lastName;  }
-    public String getFullName()  { return firstName + " " + lastName; }
-    public String getEmail()     { return email;     }
-    public int    getAge()       { return age;        }
+    public String getLastName() { return lastName; }
+    public String getFullName() { return firstName + " " + lastName; }
+    public String getEmail() { return email; }
+    public int getAge() { return age; }
 
-
+    // Setters with validation
     public void setEmail(String email) {
-        if (email != null && email.contains("@")) {
-            this.email = email;
-        } else {
-            System.out.println("Invalid email address provided.");
+        if (email == null || !email.contains("@") || !email.contains(".")) {
+            throw new InvalidEmailException(email == null ? "null" : email);
         }
+        this.email = email;
     }
 
     public void setAge(int age) {
-        if (age > 0 && age < 120) {
-            this.age = age;
-        } else {
-            System.out.println("Invalid age provided.");
+        if (age < 16 || age > 100) {
+            throw new InvalidAgeException(age);
         }
+        this.age = age;
     }
 
     @Override
