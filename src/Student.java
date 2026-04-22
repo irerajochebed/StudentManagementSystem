@@ -1,12 +1,21 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Student extends Person {
 
     private String major;
     private double gpa;
     private int yearLevel;
+
+    // List: one student can have MANY enrollments (one-to-many relationship).
+    // List preserves insertion order so we can display courses in the order they were enrolled.
     private List<Enrollment> enrollments;
+
+    // Set: a student must NOT enroll in the same course twice (unique relationship).
+    // HashSet gives O(1) duplicate checks, replacing the old manual for-loop search.
+    private Set<String> enrolledCourseCodes;
 
     public Student(String studentId, String firstName, String lastName,
                    String email, int age, String major, int yearLevel) {
@@ -15,6 +24,7 @@ public class Student extends Person {
         this.yearLevel = yearLevel;
         this.gpa = 0.0;
         this.enrollments = new ArrayList<>();
+        this.enrolledCourseCodes = new HashSet<>();
     }
 
     @Override
@@ -39,12 +49,9 @@ public class Student extends Person {
     // enrollInCourse now throws exceptions instead of printing
     public void enrollInCourse(Course course) {
 
-        // Check for duplicate enrollment
-        for (int i = 0; i < enrollments.size(); i++) {
-            Enrollment e = enrollments.get(i);
-            if (e.getCourse().getCourseCode().equals(course.getCourseCode())) {
-                throw new DuplicateEnrollmentException(getFullName(), course.getCourseName());
-            }
+        // Set.contains() replaces the old for-loop — O(1) duplicate check
+        if (enrolledCourseCodes.contains(course.getCourseCode())) {
+            throw new DuplicateEnrollmentException(getFullName(), course.getCourseName());
         }
 
         // Check if course is full
@@ -54,7 +61,8 @@ public class Student extends Person {
 
         // All checks passed - enroll student
         Enrollment enrollment = new Enrollment(this, course);
-        enrollments.add(enrollment);
+        enrollments.add(enrollment);          // add to ordered List
+        enrolledCourseCodes.add(course.getCourseCode()); // add to Set for fast duplicate check
         course.addEnrollment(enrollment);
 
         System.out.println("  SUCCESS: " + getFullName() + " enrolled in '" + course.getCourseName() + "'");
@@ -102,4 +110,5 @@ public class Student extends Person {
     public double getGpa() { return gpa; }
     public int getYearLevel() { return yearLevel; }
     public List<Enrollment> getEnrollments() { return enrollments; }
+    public Set<String> getEnrolledCourseCodes() { return enrolledCourseCodes; }
 }
