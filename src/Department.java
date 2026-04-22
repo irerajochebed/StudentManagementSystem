@@ -9,9 +9,9 @@ import java.util.Set;
 public class Department {
 
 
-    private String           departmentId;
-    private String           departmentName;
-    private String           building;
+    private String departmentId;
+    private String departmentName;
+    private String building;
 
     // List: a department has MANY instructors (one-to-many).
     // Order matters for display, so List is the right choice.
