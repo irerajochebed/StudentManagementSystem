@@ -51,6 +51,7 @@ public class Instructor extends Person {
         }
     }
 
+    
     // Getters
     public String getSpecialization() { return specialization; }
     public String getOfficeLocation() { return officeLocation; }
