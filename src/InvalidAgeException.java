@@ -10,6 +10,7 @@ public class InvalidAgeException extends StudentManagementException {
         );
         this.attemptedAge = attemptedAge;
     }
+    
 
     public int getAttemptedAge() {
         return attemptedAge;
