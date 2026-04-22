@@ -1,5 +1,9 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public class Department {
@@ -8,16 +12,27 @@ public class Department {
     private String           departmentId;
     private String           departmentName;
     private String           building;
+
+    // List: a department has MANY instructors (one-to-many).
+    // Order matters for display, so List is the right choice.
     private List<Instructor> instructors;
-    private List<Course>     courses;
+
+    // Map<courseCode, Course>: key-value lookup (one-to-one mapping).
+    // Lets us find a course instantly by its code instead of looping through a list.
+    private Map<String, Course> courseMap;
+
+    // Set: tracks unique student IDs across all courses in this department.
+    // A student may appear in multiple courses but should be counted only once.
+    private Set<String> enrolledStudentIds;
 
 
     public Department(String departmentId, String departmentName, String building) {
         this.departmentId   = departmentId;
         this.departmentName = departmentName;
         this.building       = building;
-        this.instructors    = new ArrayList<>();
-        this.courses        = new ArrayList<>();
+        this.instructors        = new ArrayList<>();
+        this.courseMap          = new HashMap<>();
+        this.enrolledStudentIds = new HashSet<>();
     }
 
 
@@ -28,9 +43,35 @@ public class Department {
     }
 
     public void addCourse(Course course) {
-        courses.add(course);
+        // Map.put: key = courseCode, value = Course object
+        courseMap.put(course.getCourseCode(), course);
         System.out.println("Course '" + course.getCourseName()
                 + "' added to " + departmentName + " department.");
+    }
+
+    // Retrieve a course by its code — O(1) Map lookup
+    public Course getCourseByCode(String courseCode) {
+        return courseMap.get(courseCode);
+    }
+
+    // Remove a course from the department by its code
+    public void removeCourse(String courseCode) {
+        Course removed = courseMap.remove(courseCode);
+        if (removed != null) {
+            System.out.println("Course '" + removed.getCourseName() + "' removed from " + departmentName + ".");
+        }
+    }
+
+    // Call this after enrollments are made to keep the Set up to date
+    public void refreshEnrolledStudents() {
+        enrolledStudentIds.clear();
+        for (Course c : courseMap.values()) {
+            List<Enrollment> enrollments = c.getEnrollments();
+            for (int i = 0; i < enrollments.size(); i++) {
+                // Set.add automatically ignores duplicates
+                enrolledStudentIds.add(enrollments.get(i).getStudent().getPersonId());
+            }
+        }
     }
 
 
@@ -39,7 +80,9 @@ public class Department {
         System.out.println("  DEPARTMENT : " + departmentName);
         System.out.println("  Building   : " + building);
         System.out.println("  Instructors: " + instructors.size());
-        System.out.println("  Courses    : " + courses.size());
+        System.out.println("  Courses    : " + courseMap.size());
+        refreshEnrolledStudents();
+        System.out.println("  Unique Students Enrolled: " + enrolledStudentIds.size());
         System.out.println("----------------------------------------");
 
         System.out.println("  [Instructors]");
@@ -51,30 +94,28 @@ public class Department {
         }
 
         System.out.println("  [Courses]");
-        for (int i = 0; i < courses.size(); i++) {
-            Course c = courses.get(i);
-            System.out.println("    " + (i + 1) + ". "
+        // Iterate over Map values to display all courses
+        int index = 1;
+        for (Map.Entry<String, Course> entry : courseMap.entrySet()) {
+            Course c = entry.getValue();
+            System.out.println("    " + index + ". "
                     + c.getCourseCode()
                     + " | " + c.getCourseName()
                     + " | Enrolled: " + c.getEnrolledCount()
                     + "/" + c.getMaxCapacity());
+            index++;
         }
 
         System.out.println("========================================");
     }
 
 
-    public String getDepartmentId() {
-        return departmentId;   }
-    public String getDepartmentName() {
-        return departmentName; }
-    public String getBuilding() {
-        return building;       }
-    public List<Instructor> getInstructors(){
-        return instructors;    }
-    public List<Course> getCourses() {
-        return courses;        }
+    public String getDepartmentId()   { return departmentId;   }
+    public String getDepartmentName() { return departmentName; }
+    public String getBuilding()       { return building;       }
+    public List<Instructor> getInstructors() { return instructors; }
+    public Map<String, Course> getCourseMap() { return courseMap; }
+    public Set<String> getEnrolledStudentIds() { return enrolledStudentIds; }
 
-    public void setBuilding(String building)    {
-        this.building = building; }
+    public void setBuilding(String building) { this.building = building; }
 }
