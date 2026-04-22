@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -312,69 +313,137 @@ public class Main {
         System.out.println();
         mathDept.displayDepartmentSummary();
 
-       
-        // COLLECTIONS DEMO
-        // Shows List, Set, and Map operations: add, retrieve, remove
+        // ============================================================
+        // COLLECTIONS DEMO — covers every class in the system
         // ============================================================
         System.out.println("==========================================");
         System.out.println("  COLLECTIONS FRAMEWORK DEMO");
         System.out.println("==========================================");
 
-        // --- LIST DEMO ---
-        // Relationship: one student has MANY enrollments (one-to-many)
-        // List preserves order and allows duplicates (though we prevent them via Set)
-        System.out.println("\n[LIST] Alice's enrollments (ordered, one-to-many):");
+        // -------------------------------------------------------
+        // STUDENT — List<Enrollment> + Set<String>
+        // -------------------------------------------------------
+        System.out.println("\n--- STUDENT COLLECTIONS ---");
+
+        // List: one student -> many enrollments (one-to-many)
+        System.out.println("[List] Alice's enrollments (ordered, one-to-many):");
         List<Enrollment> aliceEnrollments = alice.getEnrollments();
         for (int i = 0; i < aliceEnrollments.size(); i++) {
             System.out.println("  " + (i + 1) + ". " + aliceEnrollments.get(i).getSummary()); // retrieve
         }
-        // Remove demo: unenroll from last course, then re-enroll to restore state
-        if (!aliceEnrollments.isEmpty()) {
-            Enrollment removed = aliceEnrollments.remove(aliceEnrollments.size() - 1); // remove
-            System.out.println("  [List.remove] Temporarily removed: " + removed.getCourse().getCourseName());
-            aliceEnrollments.add(removed); // add back
-            System.out.println("  [List.add]    Re-added: " + removed.getCourse().getCourseName());
-        }
+        // List remove + add back to show the operation
+        Enrollment tempEnrollment = aliceEnrollments.remove(aliceEnrollments.size() - 1); // remove
+        System.out.println("  [List.remove] Removed: " + tempEnrollment.getCourse().getCourseName());
+        aliceEnrollments.add(tempEnrollment);                                              // add back
+        System.out.println("  [List.add]    Re-added: " + tempEnrollment.getCourse().getCourseName());
 
-        // --- SET DEMO ---
-        // Relationship: unique course codes a student is enrolled in (unique relationship)
-        // Set automatically rejects duplicates — no manual loop needed
-        System.out.println("\n[SET] Alice's unique enrolled course codes (no duplicates allowed):");
+        // Set: unique course codes — no duplicates allowed
+        System.out.println("\n[Set] Alice's unique enrolled course codes:");
         Set<String> aliceCodes = alice.getEnrolledCourseCodes();
-        System.out.println("  Current codes: " + aliceCodes); // retrieve (print all)
-        boolean added = aliceCodes.add("CS101"); // add duplicate — Set will reject it
-        System.out.println("  [Set.add] Try adding CS101 again -> was added? " + added); // false
-        aliceCodes.add("TEMP999"); // add a temporary code
+        System.out.println("  Current codes: " + aliceCodes);                  // retrieve
+        boolean wasAdded = aliceCodes.add("CS101");                            // add duplicate
+        System.out.println("  [Set.add] Add CS101 again -> added? " + wasAdded); // false
+        aliceCodes.add("TEMP999");                                             // add temp
         System.out.println("  [Set.add] Added TEMP999: " + aliceCodes);
-        aliceCodes.remove("TEMP999"); // remove
+        aliceCodes.remove("TEMP999");                                          // remove
         System.out.println("  [Set.remove] Removed TEMP999: " + aliceCodes);
 
-        // --- MAP DEMO ---
-        // Relationship: courseCode -> Course object (key-value lookup)
-        // Map lets us find a course in O(1) instead of looping through a list
-        System.out.println("\n[MAP] CS Department course lookup by course code:");
-        Map<String, Course> csCoursesMap = csDept.getCourseMap();
+        // -------------------------------------------------------
+        // COURSE — List<Enrollment> + Set<String> + Map<String,String>
+        // -------------------------------------------------------
+        System.out.println("\n--- COURSE COLLECTIONS ---");
 
-        // Retrieve: look up a course by its code
-        Course found = csCoursesMap.get("CS101"); // retrieve by key
-        System.out.println("  [Map.get] CS101 -> " + (found != null ? found.getCourseName() : "not found"));
+        // Set: check if a student is enrolled by ID (unique relationship)
+        System.out.println("[Set] Enrolled student IDs in Data Structures:");
+        Set<String> dsStudentIds = dataStructures.getEnrolledStudentIds();
+        System.out.println("  IDs: " + dsStudentIds);                                    // retrieve
+        System.out.println("  [Set.contains] Is STU-001 enrolled? "
+                + dsStudentIds.contains("STU-001"));                                     // retrieve
+        dsStudentIds.add("TEMP-ID");                                                     // add
+        System.out.println("  [Set.add] Added TEMP-ID: " + dsStudentIds);
+        dsStudentIds.remove("TEMP-ID");                                                  // remove
+        System.out.println("  [Set.remove] Removed TEMP-ID: " + dsStudentIds);
 
-        // Add: put a temporary course into the map
-        Course tempCourse = new Course("CS999", "Temp Course", "Demo", 1, 5, "Fall 2025");
-        csCoursesMap.put(tempCourse.getCourseCode(), tempCourse); // add
-        System.out.println("  [Map.put] Added CS999. Map size: " + csCoursesMap.size());
+        // Map: student remarks — key=studentId, value=remark (key-value relationship)
+        System.out.println("\n[Map] Student remarks in Data Structures:");
+        dataStructures.addRemark("STU-001", "Excellent participation");  // add
+        dataStructures.addRemark("STU-002", "Needs improvement");        // add
+        System.out.println("  [Map.get] Remark for STU-001: "
+                + dataStructures.getRemark("STU-001"));                  // retrieve
+        System.out.println("  [Map.get] Remark for STU-002: "
+                + dataStructures.getRemark("STU-002"));                  // retrieve
+        dataStructures.removeRemark("STU-002");                          // remove
+        System.out.println("  [Map.remove] After removing STU-002 remark: "
+                + dataStructures.getStudentRemarks());
 
-        // Remove: remove the temporary course by key
-        csCoursesMap.remove("CS999"); // remove
-        System.out.println("  [Map.remove] Removed CS999. Map size: " + csCoursesMap.size());
+        // -------------------------------------------------------
+        // INSTRUCTOR — List<Course> + Map<String, List<Course>>
+        // -------------------------------------------------------
+        System.out.println("\n--- INSTRUCTOR COLLECTIONS ---");
 
-        // Also demonstrate Department's helper that uses the Map
-        Course lookedUp = csDept.getCourseByCode("CS301");
-        System.out.println("  [getCourseByCode] CS301 -> " + (lookedUp != null ? lookedUp.getCourseName() : "not found"));
+        // List: one instructor -> many courses (one-to-many)
+        System.out.println("[List] Dr. Patel's assigned courses:");
+        List<Course> patelCourses = dr_patel.getAssignedCourses();
+        for (int i = 0; i < patelCourses.size(); i++) {
+            System.out.println("  " + (i + 1) + ". " + patelCourses.get(i)); // retrieve
+        }
+
+        // Map<semester, List<Course>>: combined collection — courses grouped by semester
+        System.out.println("\n[Map<String,List>] Dr. Smith's courses grouped by semester:");
+        dr_smith.displayCoursesBySemester();                                  // retrieve via Map
+        Map<String, List<Course>> smithSemesters = dr_smith.getCoursesBySemester();
+        // Add a temp semester entry to show Map.put
+        List<Course> tempList = new ArrayList<>();
+        tempList.add(dataStructures);
+        smithSemesters.put("Spring 2026", tempList);                          // add
+        System.out.println("  [Map.put] Added Spring 2026 entry. Keys: " + smithSemesters.keySet());
+        smithSemesters.remove("Spring 2026");                                 // remove
+        System.out.println("  [Map.remove] Removed Spring 2026. Keys: " + smithSemesters.keySet());
+
+        // -------------------------------------------------------
+        // ENROLLMENT — Map<String, String> grade history
+        // -------------------------------------------------------
+        System.out.println("\n--- ENROLLMENT COLLECTIONS ---");
+
+        // Map: grade history — key=attempt label, value=grade (key-value relationship)
+        Enrollment aliceDS = alice.getEnrollments().get(0);
+        System.out.println("[Map] Grade history for Alice in Data Structures:");
+        aliceDS.displayGradeHistory();                    // retrieve all entries
+        // Add a second grade attempt to show Map.put
+        aliceDS.assignGrade(4.0);                         // add (internally does Map.put)
+        aliceDS.displayGradeHistory();                    // retrieve updated history
+        aliceDS.removeLastGradeRecord();                  // remove last entry
+        aliceDS.displayGradeHistory();                    // retrieve after removal
+
+        // -------------------------------------------------------
+        // DEPARTMENT — List<Instructor> + Map<String,Course> + Set<String>
+        // -------------------------------------------------------
+        System.out.println("\n--- DEPARTMENT COLLECTIONS ---");
+
+        // Map: course lookup by code
+        System.out.println("[Map] CS Dept course lookup:");
+        Map<String, Course> csMap = csDept.getCourseMap();
+        Course lookedUp = csMap.get("CS301");                                 // retrieve
+        System.out.println("  [Map.get] CS301 -> " + (lookedUp != null ? lookedUp.getCourseName() : "not found"));
+        Course tempCourse = new Course("CS999", "Temp", "Demo", 1, 5, "Fall 2025");
+        csMap.put("CS999", tempCourse);                                       // add
+        System.out.println("  [Map.put] Added CS999. Size: " + csMap.size());
+        csMap.remove("CS999");                                                // remove
+        System.out.println("  [Map.remove] Removed CS999. Size: " + csMap.size());
+
+        // Set: unique students across all dept courses
+        System.out.println("\n[Set] Unique students enrolled in CS Dept:");
+        csDept.refreshEnrolledStudents();
+        Set<String> uniqueStudents = csDept.getEnrolledStudentIds();
+        System.out.println("  IDs: " + uniqueStudents);                       // retrieve
+        uniqueStudents.add("TEMP-STU");                                       // add
+        System.out.println("  [Set.add] Added TEMP-STU: " + uniqueStudents);
+        uniqueStudents.remove("TEMP-STU");                                    // remove
+        System.out.println("  [Set.remove] Removed TEMP-STU: " + uniqueStudents);
 
         System.out.println("\n==========================================");
-        System.out.println("  10 Scenarios + Collections Demo Done.");
-        System.out.println("  All exceptions handled gracefully.");
+        System.out.println("  Collections Demo Complete.");
+        System.out.println("  All 5 classes use List, Set, and/or Map.");
         System.out.println("==========================================");
     }
 }
