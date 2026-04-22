@@ -1,5 +1,9 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Course {
 
@@ -9,8 +13,19 @@ public class Course {
     private int creditHours;
     private int maxCapacity;
     private Instructor instructor;
-    private List<Enrollment> enrollments;
     private String semester;
+
+    // List: one course has MANY enrollments (one-to-many relationship).
+    // Order matters — we display students in the order they enrolled.
+    private List<Enrollment> enrollments;
+
+    // Set: stores unique student IDs enrolled in this course (unique relationship).
+    // Prevents counting the same student twice and gives O(1) membership check.
+    private Set<String> enrolledStudentIds;
+
+    // Map<studentId, remark>: key-value relationship — each student has one remark.
+    // Useful for instructor notes per student. Map ensures one remark per student.
+    private Map<String, String> studentRemarks;
 
     // Constructor validates capacity
     public Course(String courseCode, String courseName, String description,
@@ -26,8 +41,10 @@ public class Course {
         this.description = description;
         this.creditHours = creditHours;
         this.maxCapacity = maxCapacity;
-        this.semester = semester;
-        this.enrollments = new ArrayList<>();
+        this.semester          = semester;
+        this.enrollments        = new ArrayList<>();
+        this.enrolledStudentIds = new HashSet<>();
+        this.studentRemarks     = new HashMap<>();
     }
 
     public void assignInstructor(Instructor instructor) {
@@ -39,7 +56,28 @@ public class Course {
         if (isFull()) {
             throw new CourseFullException(courseName, maxCapacity);
         }
-        enrollments.add(enrollment);
+        enrollments.add(enrollment);                                    // List: add
+        enrolledStudentIds.add(enrollment.getStudent().getPersonId()); // Set: add unique ID
+    }
+
+    // Map: add a remark for a student (key = studentId, value = remark text)
+    public void addRemark(String studentId, String remark) {
+        studentRemarks.put(studentId, remark);
+    }
+
+    // Map: retrieve a remark by student ID
+    public String getRemark(String studentId) {
+        return studentRemarks.getOrDefault(studentId, "No remark");
+    }
+
+    // Map: remove a remark by student ID
+    public void removeRemark(String studentId) {
+        studentRemarks.remove(studentId);
+    }
+
+    // Set: check if a student is enrolled using their ID
+    public boolean isStudentEnrolled(String studentId) {
+        return enrolledStudentIds.contains(studentId); // Set: retrieve (contains check)
     }
 
     public boolean isFull() {
@@ -82,6 +120,8 @@ public class Course {
     public Instructor getInstructor() { return instructor; }
     public String getSemester() { return semester; }
     public List<Enrollment> getEnrollments() { return enrollments; }
+    public Set<String> getEnrolledStudentIds() { return enrolledStudentIds; }
+    public Map<String, String> getStudentRemarks() { return studentRemarks; }
 
     @Override
     public String toString() {
