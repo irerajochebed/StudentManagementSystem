@@ -312,7 +312,7 @@ public class Main {
         System.out.println();
         mathDept.displayDepartmentSummary();
 
-        // ============================================================
+       
         // COLLECTIONS DEMO
         // Shows List, Set, and Map operations: add, retrieve, remove
         // ============================================================
