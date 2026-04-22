@@ -1,3 +1,7 @@
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -308,8 +312,68 @@ public class Main {
         System.out.println();
         mathDept.displayDepartmentSummary();
 
+        // ============================================================
+        // COLLECTIONS DEMO
+        // Shows List, Set, and Map operations: add, retrieve, remove
+        // ============================================================
+        System.out.println("==========================================");
+        System.out.println("  COLLECTIONS FRAMEWORK DEMO");
+        System.out.println("==========================================");
+
+        // --- LIST DEMO ---
+        // Relationship: one student has MANY enrollments (one-to-many)
+        // List preserves order and allows duplicates (though we prevent them via Set)
+        System.out.println("\n[LIST] Alice's enrollments (ordered, one-to-many):");
+        List<Enrollment> aliceEnrollments = alice.getEnrollments();
+        for (int i = 0; i < aliceEnrollments.size(); i++) {
+            System.out.println("  " + (i + 1) + ". " + aliceEnrollments.get(i).getSummary()); // retrieve
+        }
+        // Remove demo: unenroll from last course, then re-enroll to restore state
+        if (!aliceEnrollments.isEmpty()) {
+            Enrollment removed = aliceEnrollments.remove(aliceEnrollments.size() - 1); // remove
+            System.out.println("  [List.remove] Temporarily removed: " + removed.getCourse().getCourseName());
+            aliceEnrollments.add(removed); // add back
+            System.out.println("  [List.add]    Re-added: " + removed.getCourse().getCourseName());
+        }
+
+        // --- SET DEMO ---
+        // Relationship: unique course codes a student is enrolled in (unique relationship)
+        // Set automatically rejects duplicates — no manual loop needed
+        System.out.println("\n[SET] Alice's unique enrolled course codes (no duplicates allowed):");
+        Set<String> aliceCodes = alice.getEnrolledCourseCodes();
+        System.out.println("  Current codes: " + aliceCodes); // retrieve (print all)
+        boolean added = aliceCodes.add("CS101"); // add duplicate — Set will reject it
+        System.out.println("  [Set.add] Try adding CS101 again -> was added? " + added); // false
+        aliceCodes.add("TEMP999"); // add a temporary code
+        System.out.println("  [Set.add] Added TEMP999: " + aliceCodes);
+        aliceCodes.remove("TEMP999"); // remove
+        System.out.println("  [Set.remove] Removed TEMP999: " + aliceCodes);
+
+        // --- MAP DEMO ---
+        // Relationship: courseCode -> Course object (key-value lookup)
+        // Map lets us find a course in O(1) instead of looping through a list
+        System.out.println("\n[MAP] CS Department course lookup by course code:");
+        Map<String, Course> csCoursesMap = csDept.getCourseMap();
+
+        // Retrieve: look up a course by its code
+        Course found = csCoursesMap.get("CS101"); // retrieve by key
+        System.out.println("  [Map.get] CS101 -> " + (found != null ? found.getCourseName() : "not found"));
+
+        // Add: put a temporary course into the map
+        Course tempCourse = new Course("CS999", "Temp Course", "Demo", 1, 5, "Fall 2025");
+        csCoursesMap.put(tempCourse.getCourseCode(), tempCourse); // add
+        System.out.println("  [Map.put] Added CS999. Map size: " + csCoursesMap.size());
+
+        // Remove: remove the temporary course by key
+        csCoursesMap.remove("CS999"); // remove
+        System.out.println("  [Map.remove] Removed CS999. Map size: " + csCoursesMap.size());
+
+        // Also demonstrate Department's helper that uses the Map
+        Course lookedUp = csDept.getCourseByCode("CS301");
+        System.out.println("  [getCourseByCode] CS301 -> " + (lookedUp != null ? lookedUp.getCourseName() : "not found"));
+
         System.out.println("\n==========================================");
-        System.out.println("  10 Scenarios Completed. Zero Crashes.");
+        System.out.println("  10 Scenarios + Collections Demo Done.");
         System.out.println("  All exceptions handled gracefully.");
         System.out.println("==========================================");
     }
