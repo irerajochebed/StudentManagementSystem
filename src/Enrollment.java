@@ -52,6 +52,7 @@ public class Enrollment {
         return course.getCourseCode() + " | " + course.getCourseName() + " | Grade: " + getLetterGrade() + " | Status: " + status;
     }
 
+    
     // Getters
     public Student getStudent() { return student; }
     public Course getCourse() { return course; }
