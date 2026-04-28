@@ -1,0 +1,8 @@
+studentId,studentName,courseCode,courseName,grade,status
+STU-001,Alice Johnson,CS101,Data Structures,A,COMPLETED
+STU-001,Alice Johnson,CS301,Introduction to AI,A-,COMPLETED
+STU-002,Bob Williams,CS101,Data Structures,B-,COMPLETED
+STU-002,Bob Williams,CS301,Introduction to AI,B+,COMPLETED
+STU-003,Charlie Brown,CS101,Data Structures,N/A,ACTIVE
+STU-003,Charlie Brown,MATH101,Calculus I,A,COMPLETED
+STU-004,Diana Prince,CS301,Introduction to AI,N/A,ACTIVE
