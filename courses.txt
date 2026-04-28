@@ -1,0 +1,4 @@
+courseCode,courseName,description,creditHours,maxCapacity,semester,instructorName
+CS101,Data Structures,Arrays; Linked Lists; Trees,3,3,Fall 2025,John Smith
+CS301,Introduction to AI,Search; ML; Neural Networks,3,30,Fall 2025,Priya Patel
+MATH101,Calculus I,Limits; Derivatives,4,25,Fall 2025,Emily Jones
