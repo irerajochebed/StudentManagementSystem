@@ -1,0 +1,5 @@
+studentId,firstName,lastName,email,age,major,yearLevel,gpa
+STU-001,Alice,Johnson,alice@uni.edu,20,Computer Science,2,3.50
+STU-002,Bob,Williams,bob@uni.edu,21,Computer Science,2,2.65
+STU-003,Charlie,Brown,charlie@uni.edu,19,Mathematics,1,4.00
+STU-004,Diana,Prince,diana@uni.edu,22,Computer Science,3,0.00
