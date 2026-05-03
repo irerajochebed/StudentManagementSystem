@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.studentms.ui.controller.MainController">
+   <top>
+      <VBox style="-fx-background-color: #1a237e;">
+         <!-- Top bar: title + user info + logout -->
+         <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-background-color: #1a237e;">
+            <padding><Insets bottom="10.0" left="15.0" right="15.0" top="10.0" /></padding>
+            <Label text="🎓 Student Management System"
+                   style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="welcomeLabel" text=""
+                   style="-fx-text-fill: #90caf9; -fx-font-size: 13px;" />
+            <Label fx:id="roleBadge" text=""
+                   style="-fx-background-radius: 10; -fx-padding: 3 10 3 10; -fx-font-size: 11px; -fx-font-weight: bold;" />
+            <Button fx:id="logoutBtn" text="Logout"
+                    style="-fx-background-color: #e53935; -fx-text-fill: white; -fx-background-radius: 6;" />
+         </HBox>
+         <!-- Message label -->
+         <Label fx:id="messageLabel" text="Welcome! Add students and courses to get started."
+                textAlignment="CENTER" style="-fx-padding: 0 10 8 10;" />
+      </VBox>
+   </top>
+   
+   <center>
+      <TabPane fx:id="mainTabPane">
+         <!-- STUDENT TAB -->
+         <Tab text="Students" closable="false">
+            <VBox spacing="10.0">
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+               
+               <!-- Student Input Form -->
+               <Label text="Add/Remove Student" style="-fx-font-weight: bold; -fx-font-size: 14px;" />
+               <GridPane hgap="10.0" vgap="5.0">
+                  <columnConstraints>
+                     <ColumnConstraints minWidth="100.0" />
+                     <ColumnConstraints minWidth="200.0" />
+                     <ColumnConstraints minWidth="100.0" />
+                     <ColumnConstraints minWidth="200.0" />
+                  </columnConstraints>
+                  
+                  <Label text="Student ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                  <TextField fx:id="studentIdField" promptText="STU-001" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                  
+                  <Label text="First Name:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                  <TextField fx:id="firstNameField" promptText="John" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+                  
+                  <Label text="Last Name:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                  <TextField fx:id="lastNameField" promptText="Doe" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  
+                  <Label text="Email:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <TextField fx:id="emailField" promptText="john@university.edu" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                  
+                  <Label text="Age:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                  <TextField fx:id="ageField" promptText="20" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  
+                  <Label text="Major:" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                  <TextField fx:id="majorField" promptText="Computer Science" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                  
+                  <Label text="Year Level:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                  <TextField fx:id="yearLevelField" promptText="2" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+               </GridPane>
+               
+               <!-- Student Action Buttons -->
+               <HBox spacing="10.0">
+                  <Button fx:id="addStudentBtn" text="Add Student" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" />
+                  <Button fx:id="removeStudentBtn" text="Remove Student" style="-fx-background-color: #f44336; -fx-text-fill: white;" />
+               </HBox>
+               
+               <!-- Student Search and Sort -->
+               <Separator />
+               <Label text="Search &amp; Sort Students" style="-fx-font-weight: bold; -fx-font-size: 14px;" />
+               <HBox spacing="10.0">
+                  <TextField fx:id="searchStudentField" promptText="Search by name..." prefWidth="200.0" />
+                  <Button fx:id="searchStudentBtn" text="Search" />
+                  <Button fx:id="sortByNameBtn" text="Sort by Name" />
+                  <Button fx:id="sortByGPABtn" text="Sort by GPA" />
+               </HBox>
+               
+               <!-- Student Table -->
+               <TableView fx:id="studentTable" prefHeight="300.0">
+                  <columns>
+                     <TableColumn fx:id="studentIdCol" text="ID" prefWidth="80.0" />
+                     <TableColumn fx:id="studentNameCol" text="Name" prefWidth="150.0" />
+                     <TableColumn fx:id="emailCol" text="Email" prefWidth="180.0" />
+                     <TableColumn fx:id="ageCol" text="Age" prefWidth="50.0" />
+                     <TableColumn fx:id="majorCol" text="Major" prefWidth="130.0" />
+                     <TableColumn fx:id="yearLevelCol" text="Year" prefWidth="50.0" />
+                     <TableColumn fx:id="gpaCol" text="GPA" prefWidth="60.0" />
+                  </columns>
+               </TableView>
+            </VBox>
+         </Tab>
+         
+         <!-- COURSE TAB -->
+         <Tab text="Courses" closable="false">
+            <VBox spacing="10.0">
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+               
+               <!-- Course Input Form -->
+               <Label text="Add/Remove Course" style="-fx-font-weight: bold; -fx-font-size: 14px;" />
+               <GridPane hgap="10.0" vgap="5.0">
+                  <columnConstraints>
+                     <ColumnConstraints minWidth="120.0" />
+                     <ColumnConstraints minWidth="200.0" />
+                     <ColumnConstraints minWidth="120.0" />
+                     <ColumnConstraints minWidth="200.0" />
+                  </columnConstraints>
+                  
+                  <Label text="Course Code:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                  <TextField fx:id="courseCodeField" promptText="CS101" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                  
+                  <Label text="Course Name:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                  <TextField fx:id="courseNameField" promptText="Data Structures" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+                  
+                  <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                  <TextField fx:id="descriptionField" promptText="Arrays, Lists, Trees" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  
+                  <Label text="Credit Hours:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <TextField fx:id="creditHoursField" promptText="3" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                  
+                  <Label text="Max Capacity:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                  <TextField fx:id="maxCapacityField" promptText="30" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  
+                  <Label text="Semester:" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                  <TextField fx:id="semesterField" promptText="Fall 2024" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+               </GridPane>
+               
+               <!-- Course Action Buttons -->
+               <HBox spacing="10.0">
+                  <Button fx:id="addCourseBtn" text="Add Course" style="-fx-background-color: #2196F3; -fx-text-fill: white;" />
+                  <Button fx:id="removeCourseBtn" text="Remove Course" style="-fx-background-color: #f44336; -fx-text-fill: white;" />
+               </HBox>
+               
+               <!-- Course List -->
+               <Separator />
+               <Label text="Available Courses" style="-fx-font-weight: bold; -fx-font-size: 14px;" />
+               <ListView fx:id="courseListView" prefHeight="300.0" />
+            </VBox>
+         </Tab>
+         
+         <!-- INSTRUCTORS TAB (Admin only) -->
+         <Tab text="Instructors" closable="false">
+            <VBox spacing="10.0">
+               <padding><Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/></padding>
+
+               <!-- Add Instructor Form -->
+               <Label text="Add New Instructor" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+               <GridPane hgap="10.0" vgap="5.0">
+                  <columnConstraints>
+                     <ColumnConstraints minWidth="120.0"/>
+                     <ColumnConstraints minWidth="200.0"/>
+                     <ColumnConstraints minWidth="120.0"/>
+                     <ColumnConstraints minWidth="200.0"/>
+                  </columnConstraints>
+                  <Label text="Instructor ID:"    GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                  <TextField fx:id="insIdField"   promptText="INS-001" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                  <Label text="First Name:"       GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                  <TextField fx:id="insFirstNameField" promptText="Jane" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+
+                  <Label text="Last Name:"        GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                  <TextField fx:id="insLastNameField"  promptText="Smith" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                  <Label text="Email:"            GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                  <TextField fx:id="insEmailField" promptText="jane@university.edu" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+
+                  <Label text="Age:"              GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                  <TextField fx:id="insAgeField"  promptText="35" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                  <Label text="Specialization:"   GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+                  <TextField fx:id="insSpecField" promptText="Algorithms" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+
+                  <Label text="Office:"           GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                  <TextField fx:id="insOfficeField" promptText="Room 204" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+               </GridPane>
+               <Button fx:id="addInstructorBtn" text="Add Instructor"
+                       style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+
+               <!-- Assign Instructor to Course -->
+               <Separator/>
+               <Label text="Assign Instructor to Course" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+               <GridPane hgap="10.0" vgap="8.0">
+                  <columnConstraints>
+                     <ColumnConstraints minWidth="130.0"/>
+                     <ColumnConstraints minWidth="220.0"/>
+                  </columnConstraints>
+                  <Label text="Instructor ID:"  GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                  <TextField fx:id="assignInsIdField" promptText="INS-001"
+                             GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                  <Label text="Course Code:"    GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                  <TextField fx:id="assignInsCourseField" promptText="CS101"
+                             GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+               </GridPane>
+               <Button fx:id="assignInstructorBtn" text="Assign Instructor"
+                       style="-fx-background-color: #1565c0; -fx-text-fill: white;"/>
+
+               <!-- Instructor List -->
+               <Separator/>
+               <Label text="All Instructors" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+               <TableView fx:id="instructorTable" prefHeight="220.0">
+                  <columns>
+                     <TableColumn fx:id="insIdCol"     text="ID"             prefWidth="90"/>
+                     <TableColumn fx:id="insNameCol"   text="Name"           prefWidth="160"/>
+                     <TableColumn fx:id="insEmailCol"  text="Email"          prefWidth="200"/>
+                     <TableColumn fx:id="insSpecCol"   text="Specialization" prefWidth="150"/>
+                     <TableColumn fx:id="insOfficeCol" text="Office"         prefWidth="100"/>
+                  </columns>
+               </TableView>
+            </VBox>
+         </Tab>
+
+         <!-- ENROLLMENT TAB -->
+         <Tab text="Enrollment" closable="false">
+            <VBox spacing="10.0">
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+               
+               <!-- Enrollment Form -->
+               <Label text="Enroll Student in Course" style="-fx-font-weight: bold; -fx-font-size: 14px;" />
+               <GridPane hgap="10.0" vgap="10.0">
+                  <columnConstraints>
+                     <ColumnConstraints minWidth="120.0" />
+                     <ColumnConstraints minWidth="200.0" />
+                  </columnConstraints>
+                  
+                  <Label text="Student ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                  <TextField fx:id="enrollStudentIdField" promptText="STU-001" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                  
+                  <Label text="Course Code:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                  <TextField fx:id="enrollCourseCodeField" promptText="CS101" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+               </GridPane>
+               
+               <Button fx:id="enrollBtn" text="Enroll Student" style="-fx-background-color: #FF9800; -fx-text-fill: white;" />
+               
+               <!-- View Enrollments -->
+               <Separator />
+               <Label text="View Student Enrollments" style="-fx-font-weight: bold; -fx-font-size: 14px;" />
+               <HBox spacing="10.0">
+                  <TextField fx:id="viewEnrollStudentIdField" promptText="Enter Student ID to view enrollments" prefWidth="250.0" />
+                  <Button fx:id="viewEnrollmentsBtn" text="View Enrollments" />
+               </HBox>
+               <ListView fx:id="enrollmentListView" prefHeight="200.0" />
+            </VBox>
+         </Tab>
+
+         <!-- GRADES TAB (Admin only) -->
+         <Tab text="Grades" closable="false">
+            <VBox spacing="12">
+               <padding><Insets top="15" left="15" right="15" bottom="15"/></padding>
+               <Label text="Assign / Update Student Grade" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+               <GridPane hgap="15" vgap="10">
+                  <columnConstraints>
+                     <ColumnConstraints minWidth="130"/>
+                     <ColumnConstraints minWidth="220"/>
+                  </columnConstraints>
+                  <Label text="Student ID:"      GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                  <TextField fx:id="adminGradeStudentIdField" promptText="STU-001"
+                             GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                  <Label text="Course Code:"     GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                  <TextField fx:id="adminGradeCourseCodeField" promptText="CS101"
+                             GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                  <Label text="Grade (0.0–4.0):" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                  <TextField fx:id="adminGradePointsField" promptText="e.g. 3.5"
+                             GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+               </GridPane>
+               <Button fx:id="assignGradeBtn" text="Assign Grade"
+                       style="-fx-background-color: #1a237e; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 8 20 8 20;"/>
+            </VBox>
+         </Tab>
+      </TabPane>
+   </center>
+   
+   <bottom>
+      <Label fx:id="statsLabel" text="Students: 0 | Courses: 0 | Avg GPA: 0.00" textAlignment="CENTER">
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </Label>
+   </bottom>
+</BorderPane>

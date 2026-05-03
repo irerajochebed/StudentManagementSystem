@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.studentms.ui.controller.StudentDashboardController">
+
+   <!-- TOP BAR -->
+   <top>
+      <VBox style="-fx-background-color: #2e7d32;">
+         <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-background-color: #2e7d32;">
+            <padding><Insets top="10" bottom="10" left="15" right="15"/></padding>
+            <Label text="🎓 Student Portal"
+                   style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="welcomeLabel" text=""
+                   style="-fx-text-fill: #c8e6c9; -fx-font-size: 13px;"/>
+            <Label text="STUDENT"
+                   style="-fx-background-color: white; -fx-text-fill: #2e7d32;
+                          -fx-background-radius: 10; -fx-padding: 3 10 3 10;
+                          -fx-font-size: 11px; -fx-font-weight: bold;"/>
+            <Button fx:id="logoutBtn" text="Logout" onAction="#logout"
+                    style="-fx-background-color: #e53935; -fx-text-fill: white; -fx-background-radius: 6;"/>
+         </HBox>
+         <Label fx:id="messageLabel" text=""
+                style="-fx-text-fill: #a5d6a7; -fx-padding: 0 15 6 15; -fx-font-size: 12px;"/>
+      </VBox>
+   </top>
+
+   <!-- MAIN CONTENT -->
+   <center>
+      <TabPane tabClosingPolicy="UNAVAILABLE">
+
+         <!-- MY PROFILE TAB -->
+         <Tab text="My Profile">
+            <VBox spacing="12">
+               <padding><Insets top="15" left="20" right="20" bottom="15"/></padding>
+               <Label text="My Profile" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2e7d32;"/>
+               <GridPane hgap="15" vgap="8">
+                  <columnConstraints>
+                     <ColumnConstraints minWidth="120"/>
+                     <ColumnConstraints minWidth="250"/>
+                  </columnConstraints>
+                  <Label text="Student ID:"    style="-fx-font-weight: bold;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                  <Label fx:id="profileId"     text="" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                  <Label text="Full Name:"     style="-fx-font-weight: bold;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                  <Label fx:id="profileName"   text="" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                  <Label text="Email:"         style="-fx-font-weight: bold;" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                  <Label fx:id="profileEmail"  text="" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                  <Label text="Major:"         style="-fx-font-weight: bold;" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                  <Label fx:id="profileMajor"  text="" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                  <Label text="Year Level:"    style="-fx-font-weight: bold;" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                  <Label fx:id="profileYear"   text="" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                  <Label text="Current GPA:"   style="-fx-font-weight: bold;" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                  <Label fx:id="profileGpa"    text="" GridPane.rowIndex="5" GridPane.columnIndex="1"
+                         style="-fx-font-weight: bold; -fx-text-fill: #1565c0;"/>
+               </GridPane>
+            </VBox>
+         </Tab>
+
+         <!-- MY COURSES &amp; GRADES TAB -->
+         <Tab text="My Courses &amp; Grades">
+            <VBox spacing="12">
+               <padding><Insets top="15" left="20" right="20" bottom="15"/></padding>
+               <Label text="My Enrolled Courses &amp; Grades"
+                      style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2e7d32;"/>
+               <Label text="These are the courses you are currently enrolled in."
+                      style="-fx-text-fill: #666; -fx-font-size: 12px;"/>
+               <TableView fx:id="myCoursesTable" prefHeight="400">
+                  <columns>
+                     <TableColumn fx:id="myCourseCodeCol"   text="Course Code"  prefWidth="110"/>
+                     <TableColumn fx:id="myCourseNameCol"   text="Course Name"  prefWidth="200"/>
+                     <TableColumn fx:id="myCreditHoursCol"  text="Credits"      prefWidth="70"/>
+                     <TableColumn fx:id="mySemesterCol"     text="Semester"     prefWidth="110"/>
+                     <TableColumn fx:id="myGradeCol"        text="Grade"        prefWidth="70"/>
+                     <TableColumn fx:id="myStatusCol"       text="Status"       prefWidth="100"/>
+                  </columns>
+               </TableView>
+               <HBox spacing="20">
+                  <Label text="Total Enrolled:" style="-fx-font-weight: bold;"/>
+                  <Label fx:id="totalEnrolledLabel" text="0"/>
+                  <Label text="   Current GPA:" style="-fx-font-weight: bold;"/>
+                  <Label fx:id="gpaLabel" text="0.00" style="-fx-text-fill: #1565c0; -fx-font-weight: bold;"/>
+               </HBox>
+            </VBox>
+         </Tab>
+
+      </TabPane>
+   </center>
+</BorderPane>

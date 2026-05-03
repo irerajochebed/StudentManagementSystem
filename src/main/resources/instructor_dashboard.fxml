@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.studentms.ui.controller.InstructorDashboardController">
+
+   <!-- TOP BAR -->
+   <top>
+      <VBox style="-fx-background-color: #1565c0;">
+         <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-background-color: #1565c0;">
+            <padding><Insets top="10" bottom="10" left="15" right="15"/></padding>
+            <Label text="🎓 Instructor Portal"
+                   style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="welcomeLabel" text=""
+                   style="-fx-text-fill: #bbdefb; -fx-font-size: 13px;"/>
+            <Label text="INSTRUCTOR"
+                   style="-fx-background-color: white; -fx-text-fill: #1565c0;
+                          -fx-background-radius: 10; -fx-padding: 3 10 3 10;
+                          -fx-font-size: 11px; -fx-font-weight: bold;"/>
+            <Button fx:id="logoutBtn" text="Logout"
+                    style="-fx-background-color: #e53935; -fx-text-fill: white; -fx-background-radius: 6;"/>
+         </HBox>
+         <Label fx:id="messageLabel" text=""
+                style="-fx-text-fill: #90caf9; -fx-padding: 0 15 6 15; -fx-font-size: 12px;"/>
+      </VBox>
+   </top>
+
+   <!-- MAIN CONTENT -->
+   <center>
+      <TabPane tabClosingPolicy="UNAVAILABLE">
+
+         <!-- MY COURSES TAB -->
+         <Tab text="My Courses">
+            <VBox spacing="12">
+               <padding><Insets top="15" left="20" right="20" bottom="15"/></padding>
+               <Label text="Courses I Teach"
+                      style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1565c0;"/>
+               <ListView fx:id="myCoursesList" prefHeight="200"/>
+            </VBox>
+         </Tab>
+
+         <!-- STUDENTS IN COURSE TAB -->
+         <Tab text="Students in My Course">
+            <VBox spacing="12">
+               <padding><Insets top="15" left="20" right="20" bottom="15"/></padding>
+               <Label text="View Students Enrolled in a Course"
+                      style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1565c0;"/>
+               <HBox spacing="10" alignment="CENTER_LEFT">
+                  <Label text="Course Code:"/>
+                  <TextField fx:id="viewCourseCodeField" promptText="e.g. CS101" prefWidth="150"/>
+                  <Button text="Load Students" onAction="#loadStudentsInCourse"
+                          style="-fx-background-color: #1565c0; -fx-text-fill: white; -fx-background-radius: 6;"/>
+               </HBox>
+               <TableView fx:id="courseStudentsTable" prefHeight="300">
+                  <columns>
+                     <TableColumn fx:id="csIdCol"    text="Student ID"  prefWidth="100"/>
+                     <TableColumn fx:id="csNameCol"  text="Name"        prefWidth="180"/>
+                     <TableColumn fx:id="csEmailCol" text="Email"       prefWidth="200"/>
+                     <TableColumn fx:id="csMajorCol" text="Major"       prefWidth="150"/>
+                     <TableColumn fx:id="csGpaCol"   text="GPA"         prefWidth="70"/>
+                  </columns>
+               </TableView>
+            </VBox>
+         </Tab>
+
+         <!-- ASSIGN GRADE TAB -->
+         <Tab text="Assign Grade">
+            <VBox spacing="14">
+               <padding><Insets top="15" left="20" right="20" bottom="15"/></padding>
+               <Label text="Assign / Update Student Grade"
+                      style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1565c0;"/>
+               <Label text="You can only assign grades for students in your courses."
+                      style="-fx-text-fill: #666; -fx-font-size: 12px;"/>
+               <GridPane hgap="15" vgap="10">
+                  <columnConstraints>
+                     <ColumnConstraints minWidth="130"/>
+                     <ColumnConstraints minWidth="220"/>
+                  </columnConstraints>
+                  <Label text="Student ID:"   GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                  <TextField fx:id="gradeStudentIdField" promptText="STU-001"
+                             GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                  <Label text="Course Code:"  GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                  <TextField fx:id="gradeCourseCodeField" promptText="CS101"
+                             GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                  <Label text="Grade (0.0–4.0):" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                  <TextField fx:id="gradePointsField" promptText="e.g. 3.5"
+                             GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+               </GridPane>
+               <Button text="Assign Grade" onAction="#assignGrade"
+                       style="-fx-background-color: #1565c0; -fx-text-fill: white;
+                              -fx-background-radius: 6; -fx-font-size: 13px; -fx-padding: 8 20 8 20;"/>
+            </VBox>
+         </Tab>
+
+         <!-- ENROLL STUDENT TAB -->
+         <Tab text="Enroll Student">
+            <VBox spacing="14">
+               <padding><Insets top="15" left="20" right="20" bottom="15"/></padding>
+               <Label text="Enroll a Student into a Course"
+                      style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1565c0;"/>
+               <GridPane hgap="15" vgap="10">
+                  <columnConstraints>
+                     <ColumnConstraints minWidth="130"/>
+                     <ColumnConstraints minWidth="220"/>
+                  </columnConstraints>
+                  <Label text="Student ID:"  GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                  <TextField fx:id="enrollStudentIdField" promptText="STU-001"
+                             GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                  <Label text="Course Code:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                  <TextField fx:id="enrollCourseCodeField" promptText="CS101"
+                             GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+               </GridPane>
+               <Button text="Enroll Student" onAction="#enrollStudent"
+                       style="-fx-background-color: #FF9800; -fx-text-fill: white;
+                              -fx-background-radius: 6; -fx-font-size: 13px; -fx-padding: 8 20 8 20;"/>
+            </VBox>
+         </Tab>
+
+      </TabPane>
+   </center>
+</BorderPane>

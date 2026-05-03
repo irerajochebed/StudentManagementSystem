@@ -1,0 +1,106 @@
+/* Student Management System - CSS Styles */
+
+/* Message Label Styles */
+.message-success {
+    -fx-text-fill: #4CAF50;
+    -fx-font-weight: bold;
+}
+
+.message-error {
+    -fx-text-fill: #f44336;
+    -fx-font-weight: bold;
+}
+
+.message-info {
+    -fx-text-fill: #2196F3;
+    -fx-font-weight: bold;
+}
+
+/* Button Hover Effects */
+.button:hover {
+    -fx-opacity: 0.8;
+}
+
+/* Table Styling */
+.table-view {
+    -fx-background-color: #fafafa;
+}
+
+.table-view .column-header {
+    -fx-background-color: #e0e0e0;
+    -fx-font-weight: bold;
+}
+
+/* Tab Pane Styling */
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #f5f5f5;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #e0e0e0;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #2196F3;
+    -fx-text-base-color: white;
+}
+
+/* Input Field Focus */
+.text-field:focused {
+    -fx-border-color: #2196F3;
+    -fx-border-width: 2px;
+}
+
+/* ListView Styling */
+.list-view {
+    -fx-background-color: #fafafa;
+}
+
+.list-view .list-cell:selected {
+    -fx-background-color: #2196F3;
+    -fx-text-fill: white;
+}
+
+/* ── Login / Register Styles ── */
+
+.login-field {
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: #c5cae9;
+    -fx-border-width: 1.5;
+    -fx-padding: 8 12 8 12;
+    -fx-font-size: 13px;
+    -fx-pref-height: 36px;
+}
+
+.login-field:focused {
+    -fx-border-color: #3949ab;
+    -fx-border-width: 2;
+}
+
+.btn-primary {
+    -fx-background-color: #1a237e;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 10 0 10 0;
+    -fx-cursor: hand;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #283593;
+}
+
+.btn-link {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1a237e;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-underline: true;
+    -fx-padding: 0;
+}
+
+.btn-link:hover {
+    -fx-text-fill: #3949ab;
+}
