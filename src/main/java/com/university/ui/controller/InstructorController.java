@@ -1,9 +1,13 @@
 package com.university.ui.controller;
 
 import com.university.app.StudentManagementApp;
+import com.university.backend.exception.StudentManagementException;
 import com.university.backend.manager.StudentManagementManager;
 import com.university.backend.model.Instructor;
-import com.university.backend.exception.StudentManagementException;
+import com.university.ui.component.StatusLabel;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -11,12 +15,13 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 /**
- * Controller for the Instructor Management Tab.
- * Handles CRUD operations for instructors.
+ * InstructorController — UI bridge for instructor operations.
+ * UI only: captures input → calls backend → displays output.
  */
 public class InstructorController implements Initializable {
 
@@ -28,112 +33,134 @@ public class InstructorController implements Initializable {
     @FXML private TextField specializationField;
     @FXML private TextField officeField;
     @FXML private TextField salaryField;
-    @FXML private TableView<Instructor> instructorTableView;
-    @FXML private TableColumn<Instructor, String> idColumn;
-    @FXML private TableColumn<Instructor, String> nameColumn;
-    @FXML private TableColumn<Instructor, String> emailColumn;
+
+    @FXML private TableView<Instructor>            instructorTableView;
+    @FXML private TableColumn<Instructor, String>  idColumn;
+    @FXML private TableColumn<Instructor, String>  nameColumn;
+    @FXML private TableColumn<Instructor, String>  emailColumn;
     @FXML private TableColumn<Instructor, Integer> ageColumn;
-    @FXML private TableColumn<Instructor, String> specializationColumn;
-    @FXML private TableColumn<Instructor, String> officeColumn;
+    @FXML private TableColumn<Instructor, String>  specializationColumn;
+    @FXML private TableColumn<Instructor, String>  officeColumn;
     @FXML private TableColumn<Instructor, Integer> coursesColumn;
-    @FXML private TableColumn<Instructor, Void> actionsColumn;
+
     @FXML private Label statusLabel;
 
     private StudentManagementManager manager;
+    private StatusLabel status;
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void initialize(URL url, ResourceBundle rb) {
         manager = StudentManagementApp.getManager();
-        
-        // Setup spinner
-        SpinnerValueFactory<Integer> ageFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(20, 80, 35);
-        ageSpinner.setValueFactory(ageFactory);
-        
-        // Setup table columns
-        setupTableColumns();
-        
-        // Load data
-        refreshInstructorTable();
-    }
+        status  = new StatusLabel(statusLabel);
 
-    private void setupTableColumns() {
+        ageSpinner.setValueFactory(
+            new SpinnerValueFactory.IntegerSpinnerValueFactory(20, 80, 35));
+
         idColumn.setCellValueFactory(new PropertyValueFactory<>("personId"));
-        nameColumn.setCellValueFactory(cellData -> 
-            new javafx.beans.property.SimpleStringProperty(cellData.getValue().getFullName()));
+        nameColumn.setCellValueFactory(d ->
+            new SimpleStringProperty(d.getValue().getFullName()));
         emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
         ageColumn.setCellValueFactory(new PropertyValueFactory<>("age"));
         specializationColumn.setCellValueFactory(new PropertyValueFactory<>("specialization"));
         officeColumn.setCellValueFactory(new PropertyValueFactory<>("officeLocation"));
-        coursesColumn.setCellValueFactory(cellData -> 
-            new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getAssignedCourses().size()));
+        coursesColumn.setCellValueFactory(d ->
+            new SimpleObjectProperty<>(d.getValue().getAssignedCourses().size()));
+
+        refreshTable();
     }
 
+    // ── ADD ───────────────────────────────────────────────────────
     @FXML
     private void handleAddInstructor() {
+        String id    = instructorIdField.getText().trim();
+        String first = firstNameField.getText().trim();
+        String last  = lastNameField.getText().trim();
+        String email = emailField.getText().trim();
+
+        if (id.isEmpty() || first.isEmpty() || last.isEmpty() || email.isEmpty()) {
+            status.error("ID, First Name, Last Name and Email are required.");
+            return;
+        }
         try {
-            if (instructorIdField.getText().isEmpty() || firstNameField.getText().isEmpty() ||
-                lastNameField.getText().isEmpty() || emailField.getText().isEmpty()) {
-                setStatus("✗ Please fill in all required fields", true);
-                return;
-            }
+            double salary = salaryField.getText().trim().isEmpty()
+                ? 0.0 : Double.parseDouble(salaryField.getText().trim());
 
-            double salary = 0;
-            if (!salaryField.getText().isEmpty()) {
-                salary = Double.parseDouble(salaryField.getText());
-            }
+            Instructor ins = new Instructor(id, first, last, email,
+                ageSpinner.getValue(),
+                specializationField.getText().trim(),
+                officeField.getText().trim(),
+                salary);
 
-            Instructor instructor = new Instructor(
-                    instructorIdField.getText(),
-                    firstNameField.getText(),
-                    lastNameField.getText(),
-                    emailField.getText(),
-                    ageSpinner.getValue(),
-                    specializationField.getText(),
-                    officeField.getText(),
-                    salary
-            );
-
-            manager.addInstructor(instructor);
-            setStatus("✓ Instructor added successfully!", false);
+            manager.addInstructor(ins);
+            status.success("Instructor " + ins.getFullName() + " added!");
             handleClear();
-            refreshInstructorTable();
+            refreshTable();
 
+        } catch (NumberFormatException e) {
+            status.error("Salary must be a number.");
         } catch (StudentManagementException e) {
-            setStatus("✗ Error: " + e.getMessage(), true);
+            status.error(e.getMessage());
         }
     }
 
+    // ── REMOVE ───────────────────────────────────────────────────
     @FXML
     private void handleRemoveInstructor() {
         Instructor selected = instructorTableView.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            manager.removeInstructor(selected.getPersonId());
-            setStatus("✓ Instructor removed successfully!", false);
-            refreshInstructorTable();
-        } else {
-            setStatus("✗ Please select an instructor to remove", true);
-        }
+        if (selected == null) { status.error("Select an instructor first."); return; }
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+            "Remove " + selected.getFullName() + "?",
+            ButtonType.YES, ButtonType.NO);
+        confirm.setTitle("Confirm Remove");
+        confirm.showAndWait().ifPresent(btn -> {
+            if (btn == ButtonType.YES) {
+                manager.removeInstructor(selected.getPersonId());
+                Platform.runLater(() -> {
+                    refreshTable();
+                    status.success("Instructor removed.");
+                });
+            }
+        });
     }
 
+    // ── SORT by name ─────────────────────────────────────────────
+    @FXML
+    private void handleSortByName() {
+        List<Instructor> list = new ArrayList<>(manager.getAllInstructors());
+        for (int i = 0; i < list.size() - 1; i++)
+            for (int j = 0; j < list.size() - 1 - i; j++)
+                if (list.get(j).getFullName()
+                        .compareTo(list.get(j + 1).getFullName()) > 0) {
+                    Instructor t = list.get(j);
+                    list.set(j, list.get(j + 1));
+                    list.set(j + 1, t);
+                }
+        Platform.runLater(() -> {
+            instructorTableView.setItems(FXCollections.observableArrayList(list));
+            status.info("Sorted by name.");
+        });
+    }
+
+    // ── VIEW DETAILS ─────────────────────────────────────────────
     @FXML
     private void handleViewDetails() {
-        Instructor selected = instructorTableView.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            String details = String.format(
-                    "ID: %s\nName: %s\nEmail: %s\nAge: %d\nSpecialization: %s\nOffice: %s\nSalary: $%.2f\nCourses Taught: %d",
-                    selected.getPersonId(),
-                    selected.getFullName(),
-                    selected.getEmail(),
-                    selected.getAge(),
-                    selected.getSpecialization(),
-                    selected.getOfficeLocation(),
-                    selected.getSalary(),
-                    selected.getAssignedCourses().size()
-            );
-            showAlert("Instructor Details", details);
-        } else {
-            setStatus("✗ Please select an instructor to view details", true);
-        }
+        Instructor ins = instructorTableView.getSelectionModel().getSelectedItem();
+        if (ins == null) { status.error("Select an instructor first."); return; }
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Instructor Details");
+        alert.setHeaderText(ins.getFullName());
+        alert.setContentText(
+            "ID             : " + ins.getPersonId()       + "\n" +
+            "Email          : " + ins.getEmail()           + "\n" +
+            "Age            : " + ins.getAge()             + "\n" +
+            "Specialization : " + ins.getSpecialization()  + "\n" +
+            "Office         : " + ins.getOfficeLocation()  + "\n" +
+            "Salary         : $" + String.format("%.2f", ins.getSalary()) + "\n" +
+            "Courses Taught : " + ins.getAssignedCourses().size()
+        );
+        alert.showAndWait();
     }
 
     @FXML
@@ -142,30 +169,21 @@ public class InstructorController implements Initializable {
         firstNameField.clear();
         lastNameField.clear();
         emailField.clear();
-        ageSpinner.getValueFactory().setValue(35);
         specializationField.clear();
         officeField.clear();
         salaryField.clear();
+        ageSpinner.getValueFactory().setValue(35);
     }
 
     @FXML
     private void handleRefresh() {
-        refreshInstructorTable();
-        setStatus("✓ Instructor list refreshed", false);
+        refreshTable();
+        status.info("Instructor list refreshed.");
     }
 
-    private void refreshInstructorTable() {
-        List<Instructor> instructors = manager.getAllInstructors();
-        instructorTableView.setItems(FXCollections.observableArrayList(instructors));
-    }
-
-    private void setStatus(String message, boolean isError) {
-        statusLabel.setText(message);
-        statusLabel.setStyle(isError ? "-fx-text-fill: #e74c3c;" : "-fx-text-fill: #27ae60;");
-    }
-
-    private void showAlert(String title, String message) {
-        System.out.println(title + ": " + message);
-        // TODO: Implement proper alert dialog
+    private void refreshTable() {
+        Platform.runLater(() ->
+            instructorTableView.setItems(
+                FXCollections.observableArrayList(manager.getAllInstructors())));
     }
 }

@@ -1,9 +1,12 @@
 package com.university.ui.controller;
 
 import com.university.app.StudentManagementApp;
+import com.university.backend.exception.StudentManagementException;
 import com.university.backend.manager.StudentManagementManager;
 import com.university.backend.model.Course;
-import com.university.backend.exception.StudentManagementException;
+import com.university.ui.component.StatusLabel;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -11,129 +14,154 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 /**
- * Controller for the Course Management Tab.
- * Handles CRUD operations for courses.
+ * CourseController — UI bridge for course operations.
+ * UI only: captures input → calls backend → displays output.
  */
 public class CourseController implements Initializable {
 
     @FXML private TextField courseCodeField;
     @FXML private TextField courseNameField;
-    @FXML private TextArea descriptionArea;
+    @FXML private TextArea  descriptionArea;
     @FXML private Spinner<Integer> creditHoursSpinner;
     @FXML private Spinner<Integer> maxCapacitySpinner;
     @FXML private ComboBox<String> semesterCombo;
-    @FXML private TableView<Course> courseTableView;
-    @FXML private TableColumn<Course, String> codeColumn;
-    @FXML private TableColumn<Course, String> nameColumn;
+
+    @FXML private TableView<Course>            courseTableView;
+    @FXML private TableColumn<Course, String>  codeColumn;
+    @FXML private TableColumn<Course, String>  nameColumn;
     @FXML private TableColumn<Course, Integer> creditsColumn;
-    @FXML private TableColumn<Course, String> semesterColumn;
-    @FXML private TableColumn<Course, String> capacityColumn;
-    @FXML private TableColumn<Course, String> statusColumn;
-    @FXML private TableColumn<Course, Void> actionsColumn;
+    @FXML private TableColumn<Course, String>  semesterColumn;
+    @FXML private TableColumn<Course, String>  capacityColumn;
+    @FXML private TableColumn<Course, String>  statusColumn;
+
     @FXML private Label statusLabel;
 
     private StudentManagementManager manager;
+    private StatusLabel status;
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void initialize(URL url, ResourceBundle rb) {
         manager = StudentManagementApp.getManager();
-        
-        // Setup spinners
-        SpinnerValueFactory<Integer> creditFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 5, 3);
-        creditHoursSpinner.setValueFactory(creditFactory);
-        
-        SpinnerValueFactory<Integer> capacityFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 30);
-        maxCapacitySpinner.setValueFactory(capacityFactory);
-        
-        // Setup semester combobox
-        semesterCombo.setItems(FXCollections.observableArrayList("Fall", "Spring", "Summer", "Winter"));
-        
-        // Setup table columns
-        setupTableColumns();
-        
-        // Load data
-        refreshCourseTable();
-    }
+        status  = new StatusLabel(statusLabel);
 
-    private void setupTableColumns() {
+        creditHoursSpinner.setValueFactory(
+            new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 5, 3));
+        maxCapacitySpinner.setValueFactory(
+            new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 30));
+
+        semesterCombo.setItems(
+            FXCollections.observableArrayList("Fall", "Spring", "Summer", "Winter"));
+
+        // Wire columns
         codeColumn.setCellValueFactory(new PropertyValueFactory<>("courseCode"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("courseName"));
         creditsColumn.setCellValueFactory(new PropertyValueFactory<>("creditHours"));
         semesterColumn.setCellValueFactory(new PropertyValueFactory<>("semester"));
-        
-        capacityColumn.setCellValueFactory(cellData -> 
-            new javafx.beans.property.SimpleStringProperty(
-                cellData.getValue().getEnrolledCount() + "/" + cellData.getValue().getMaxCapacity()
-            ));
-        
-        statusColumn.setCellValueFactory(cellData -> 
-            new javafx.beans.property.SimpleStringProperty(
-                cellData.getValue().isFull() ? "FULL" : "OPEN"
-            ));
+        capacityColumn.setCellValueFactory(d ->
+            new SimpleStringProperty(
+                d.getValue().getEnrolledCount() + "/" + d.getValue().getMaxCapacity()));
+        statusColumn.setCellValueFactory(d ->
+            new SimpleStringProperty(d.getValue().isFull() ? "FULL" : "OPEN"));
+
+        refreshTable();
     }
 
+    // ── ADD ───────────────────────────────────────────────────────
     @FXML
     private void handleAddCourse() {
+        String code = courseCodeField.getText().trim();
+        String name = courseNameField.getText().trim();
+        String sem  = semesterCombo.getValue();
+
+        if (code.isEmpty() || name.isEmpty() || sem == null) {
+            status.error("Course Code, Name and Semester are required.");
+            return;
+        }
         try {
-            if (courseCodeField.getText().isEmpty() || courseNameField.getText().isEmpty() ||
-                semesterCombo.getValue() == null) {
-                setStatus("✗ Please fill in all required fields", true);
-                return;
-            }
-
-            Course course = new Course(
-                    courseCodeField.getText(),
-                    courseNameField.getText(),
-                    descriptionArea.getText(),
-                    creditHoursSpinner.getValue(),
-                    maxCapacitySpinner.getValue(),
-                    semesterCombo.getValue()
-            );
-
+            Course course = new Course(code, name, descriptionArea.getText(),
+                creditHoursSpinner.getValue(), maxCapacitySpinner.getValue(), sem);
             manager.addCourse(course);
-            setStatus("✓ Course added successfully!", false);
+            status.success("Course \"" + name + "\" added!");
             handleClear();
-            refreshCourseTable();
-
+            refreshTable();
         } catch (StudentManagementException e) {
-            setStatus("✗ Error: " + e.getMessage(), true);
+            status.error(e.getMessage());
         }
     }
 
+    // ── REMOVE ───────────────────────────────────────────────────
     @FXML
     private void handleRemoveCourse() {
         Course selected = courseTableView.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            manager.removeCourse(selected.getCourseCode());
-            setStatus("✓ Course removed successfully!", false);
-            refreshCourseTable();
-        } else {
-            setStatus("✗ Please select a course to remove", true);
-        }
+        if (selected == null) { status.error("Select a course first."); return; }
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+            "Remove course " + selected.getCourseCode() + "?",
+            ButtonType.YES, ButtonType.NO);
+        confirm.setTitle("Confirm Remove");
+        confirm.showAndWait().ifPresent(btn -> {
+            if (btn == ButtonType.YES) {
+                manager.removeCourse(selected.getCourseCode());
+                Platform.runLater(() -> {
+                    refreshTable();
+                    status.success("Course removed.");
+                });
+            }
+        });
     }
 
+    // ── SEARCH ───────────────────────────────────────────────────
+    @FXML
+    private void handleSearch() {
+        String term = courseCodeField.getText().trim();
+        if (term.isEmpty()) { refreshTable(); return; }
+        List<Course> results = manager.searchCourseByName(term);
+        Platform.runLater(() -> {
+            courseTableView.setItems(FXCollections.observableArrayList(results));
+            status.info("Found " + results.size() + " course(s).");
+        });
+    }
+
+    // ── SORT by name ─────────────────────────────────────────────
+    @FXML
+    private void handleSortByName() {
+        List<Course> list = new ArrayList<>(manager.getAllCourses());
+        for (int i = 0; i < list.size() - 1; i++)
+            for (int j = 0; j < list.size() - 1 - i; j++)
+                if (list.get(j).getCourseName()
+                        .compareTo(list.get(j + 1).getCourseName()) > 0) {
+                    Course t = list.get(j);
+                    list.set(j, list.get(j + 1));
+                    list.set(j + 1, t);
+                }
+        Platform.runLater(() -> {
+            courseTableView.setItems(FXCollections.observableArrayList(list));
+            status.info("Sorted by course name.");
+        });
+    }
+
+    // ── VIEW DETAILS ─────────────────────────────────────────────
     @FXML
     private void handleViewDetails() {
-        Course selected = courseTableView.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            String details = String.format(
-                    "Code: %s\nName: %s\nCredits: %d\nSemester: %s\nCapacity: %d/%d\nDescription: %s",
-                    selected.getCourseCode(),
-                    selected.getCourseName(),
-                    selected.getCreditHours(),
-                    selected.getSemester(),
-                    selected.getEnrolledCount(),
-                    selected.getMaxCapacity(),
-                    selected.getDescription()
-            );
-            showAlert("Course Details", details);
-        } else {
-            setStatus("✗ Please select a course to view details", true);
-        }
+        Course c = courseTableView.getSelectionModel().getSelectedItem();
+        if (c == null) { status.error("Select a course first."); return; }
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Course Details");
+        alert.setHeaderText(c.getCourseCode() + " — " + c.getCourseName());
+        alert.setContentText(
+            "Credits     : " + c.getCreditHours()  + "\n" +
+            "Semester    : " + c.getSemester()      + "\n" +
+            "Capacity    : " + c.getEnrolledCount() + "/" + c.getMaxCapacity() + "\n" +
+            "Status      : " + (c.isFull() ? "FULL" : "OPEN") + "\n" +
+            "Description : " + c.getDescription()
+        );
+        alert.showAndWait();
     }
 
     @FXML
@@ -148,22 +176,13 @@ public class CourseController implements Initializable {
 
     @FXML
     private void handleRefresh() {
-        refreshCourseTable();
-        setStatus("✓ Course list refreshed", false);
+        refreshTable();
+        status.info("Course list refreshed.");
     }
 
-    private void refreshCourseTable() {
-        List<Course> courses = manager.getAllCourses();
-        courseTableView.setItems(FXCollections.observableArrayList(courses));
-    }
-
-    private void setStatus(String message, boolean isError) {
-        statusLabel.setText(message);
-        statusLabel.setStyle(isError ? "-fx-text-fill: #e74c3c;" : "-fx-text-fill: #27ae60;");
-    }
-
-    private void showAlert(String title, String message) {
-        System.out.println(title + ": " + message);
-        // TODO: Implement proper alert dialog
+    private void refreshTable() {
+        Platform.runLater(() ->
+            courseTableView.setItems(
+                FXCollections.observableArrayList(manager.getAllCourses())));
     }
 }

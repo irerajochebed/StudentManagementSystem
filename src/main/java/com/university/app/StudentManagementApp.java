@@ -65,4 +65,10 @@ public class StudentManagementApp extends Application {
     public static FileIOHandler getFileIOHandler() {
         return fileIOHandler;
     }
+
+    /** Resets the manager to a fresh empty state (used by Clear All). */
+    public static void resetManager() {
+        manager = new StudentManagementManager();
+        if (fileIOHandler != null) fileIOHandler.saveManager(manager);
+    }
 }

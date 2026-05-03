@@ -3,148 +3,171 @@ package com.university.ui.controller;
 import com.university.app.StudentManagementApp;
 import com.university.backend.manager.StudentManagementManager;
 import com.university.backend.model.Enrollment;
-import com.university.backend.model.Student;
-import com.university.backend.model.Course;
+import com.university.ui.component.StatusLabel;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 /**
- * Controller for the Enrollment Management Tab.
- * Handles student enrollment in courses and grade assignment.
+ * EnrollmentController — UI bridge for enrollment and grade operations.
+ * UI only: captures input → calls backend → displays output.
  */
 public class EnrollmentController implements Initializable {
 
+    // ── Enroll section ────────────────────────────────────────────
     @FXML private ComboBox<String> studentCombo;
     @FXML private ComboBox<String> courseCombo;
-    @FXML private ComboBox<String> enrollmentCombo;
-    @FXML private Spinner<Double> gradeSpinner;
-    @FXML private TableView<Enrollment> enrollmentTableView;
-    @FXML private TableColumn<Enrollment, String> studentColumn;
-    @FXML private TableColumn<Enrollment, String> courseCodeColumn;
-    @FXML private TableColumn<Enrollment, String> courseNameColumn;
-    @FXML private TableColumn<Enrollment, String> dateColumn;
-    @FXML private TableColumn<Enrollment, String> statusColumn;
-    @FXML private TableColumn<Enrollment, Double> gradeColumn;
-    @FXML private TableColumn<Enrollment, String> letterGradeColumn;
+
+    // ── Grade section ─────────────────────────────────────────────
+    @FXML private ComboBox<String>  enrollmentCombo;
+    @FXML private Spinner<Double>   gradeSpinner;
+
+    // ── Table ─────────────────────────────────────────────────────
+    @FXML private TableView<Enrollment>            enrollmentTableView;
+    @FXML private TableColumn<Enrollment, String>  studentColumn;
+    @FXML private TableColumn<Enrollment, String>  courseCodeColumn;
+    @FXML private TableColumn<Enrollment, String>  courseNameColumn;
+    @FXML private TableColumn<Enrollment, String>  dateColumn;
+    @FXML private TableColumn<Enrollment, String>  statusColumn;
+    @FXML private TableColumn<Enrollment, Double>  gradeColumn;
+    @FXML private TableColumn<Enrollment, String>  letterGradeColumn;
+
     @FXML private Label statusLabel;
 
     private StudentManagementManager manager;
+    private StatusLabel status;
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void initialize(URL url, ResourceBundle rb) {
         manager = StudentManagementApp.getManager();
-        
-        // Setup spinner
-        SpinnerValueFactory<Double> gradeFactory = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 4.0, 3.5, 0.1);
-        gradeSpinner.setValueFactory(gradeFactory);
-        
-        // Setup table columns
-        setupTableColumns();
-        
-        // Load data
-        refreshEnrollmentData();
+        status  = new StatusLabel(statusLabel);
+
+        gradeSpinner.setValueFactory(
+            new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 4.0, 3.5, 0.1));
+
+        // Wire table columns
+        studentColumn.setCellValueFactory(d ->
+            new SimpleStringProperty(d.getValue().getStudent().getFullName()));
+        courseCodeColumn.setCellValueFactory(d ->
+            new SimpleStringProperty(d.getValue().getCourse().getCourseCode()));
+        courseNameColumn.setCellValueFactory(d ->
+            new SimpleStringProperty(d.getValue().getCourse().getCourseName()));
+        dateColumn.setCellValueFactory(d ->
+            new SimpleStringProperty(d.getValue().getEnrollmentDate().toString()));
+        statusColumn.setCellValueFactory(d ->
+            new SimpleStringProperty(d.getValue().getStatus()));
+        gradeColumn.setCellValueFactory(d ->
+            new SimpleObjectProperty<>(d.getValue().getGradePoints()));
+        letterGradeColumn.setCellValueFactory(d ->
+            new SimpleStringProperty(d.getValue().getLetterGrade()));
+
+        refreshAll();
     }
 
-    private void setupTableColumns() {
-        studentColumn.setCellValueFactory(cellData -> 
-            new javafx.beans.property.SimpleStringProperty(cellData.getValue().getStudent().getFullName()));
-        courseCodeColumn.setCellValueFactory(cellData -> 
-            new javafx.beans.property.SimpleStringProperty(cellData.getValue().getCourse().getCourseCode()));
-        courseNameColumn.setCellValueFactory(cellData -> 
-            new javafx.beans.property.SimpleStringProperty(cellData.getValue().getCourse().getCourseName()));
-        dateColumn.setCellValueFactory(cellData -> 
-            new javafx.beans.property.SimpleStringProperty(cellData.getValue().getEnrollmentDate().toString()));
-        statusColumn.setCellValueFactory(cellData -> 
-            new javafx.beans.property.SimpleStringProperty(cellData.getValue().getStatus()));
-        gradeColumn.setCellValueFactory(cellData -> 
-            new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getGradePoints()));
-        letterGradeColumn.setCellValueFactory(cellData -> 
-            new javafx.beans.property.SimpleStringProperty(cellData.getValue().getLetterGrade()));
-    }
-
+    // ── ENROLL ───────────────────────────────────────────────────
     @FXML
     private void handleEnroll() {
+        if (studentCombo.getValue() == null || courseCombo.getValue() == null) {
+            status.error("Select both a student and a course.");
+            return;
+        }
         try {
-            if (studentCombo.getValue() == null || courseCombo.getValue() == null) {
-                setStatus("✗ Please select a student and course", true);
-                return;
-            }
-
-            String studentId = studentCombo.getValue().split(" - ")[0];
+            // IDs are stored as "ID - Name" in the combo
+            String studentId  = studentCombo.getValue().split(" - ")[0];
             String courseCode = courseCombo.getValue().split(" - ")[0];
 
             manager.enrollStudent(studentId, courseCode);
-            setStatus("✓ Student enrolled successfully!", false);
-            refreshEnrollmentData();
-
+            status.success("Student enrolled successfully!");
+            refreshAll();
         } catch (Exception e) {
-            setStatus("✗ Error: " + e.getMessage(), true);
+            status.error(e.getMessage());
         }
     }
 
+    // ── ASSIGN GRADE ─────────────────────────────────────────────
     @FXML
     private void handleAssignGrade() {
+        if (enrollmentCombo.getValue() == null) {
+            status.error("Select an enrollment first.");
+            return;
+        }
         try {
-            if (enrollmentCombo.getValue() == null) {
-                setStatus("✗ Please select an enrollment", true);
-                return;
-            }
-
-            String[] parts = enrollmentCombo.getValue().split(" - ");
-            String studentId = parts[0];
+            String[] parts    = enrollmentCombo.getValue().split(" - ");
+            String studentId  = parts[0];
             String courseCode = parts[1];
 
             manager.assignGrade(studentId, courseCode, gradeSpinner.getValue());
-            setStatus("✓ Grade assigned successfully!", false);
-            refreshEnrollmentData();
-
+            status.success("Grade assigned successfully!");
+            refreshAll();
         } catch (Exception e) {
-            setStatus("✗ Error: " + e.getMessage(), true);
+            status.error(e.getMessage());
         }
+    }
+
+    // ── SORT by student name ──────────────────────────────────────
+    @FXML
+    private void handleSortByStudent() {
+        List<Enrollment> list = getAllEnrollments();
+        for (int i = 0; i < list.size() - 1; i++)
+            for (int j = 0; j < list.size() - 1 - i; j++)
+                if (list.get(j).getStudent().getFullName()
+                        .compareTo(list.get(j + 1).getStudent().getFullName()) > 0) {
+                    Enrollment t = list.get(j);
+                    list.set(j, list.get(j + 1));
+                    list.set(j + 1, t);
+                }
+        Platform.runLater(() -> {
+            enrollmentTableView.setItems(FXCollections.observableArrayList(list));
+            status.info("Sorted by student name.");
+        });
     }
 
     @FXML
     private void handleRefresh() {
-        refreshEnrollmentData();
-        setStatus("✓ Enrollment list refreshed", false);
+        refreshAll();
+        status.info("Enrollment list refreshed.");
     }
 
-    private void refreshEnrollmentData() {
-        // Load students
-        List<String> studentOptions = manager.getAllStudents().stream()
+    // ── Helpers ───────────────────────────────────────────────────
+    private void refreshAll() {
+        Platform.runLater(() -> {
+            // Populate student combo: "ID - Full Name"
+            List<String> students = manager.getAllStudents().stream()
                 .map(s -> s.getPersonId() + " - " + s.getFullName())
                 .collect(Collectors.toList());
-        studentCombo.setItems(FXCollections.observableArrayList(studentOptions));
+            studentCombo.setItems(FXCollections.observableArrayList(students));
 
-        // Load available courses
-        List<String> courseOptions = manager.getAllCourses().stream()
+            // Populate course combo: "Code - Name"
+            List<String> courses = manager.getAllCourses().stream()
                 .map(c -> c.getCourseCode() + " - " + c.getCourseName())
                 .collect(Collectors.toList());
-        courseCombo.setItems(FXCollections.observableArrayList(courseOptions));
+            courseCombo.setItems(FXCollections.observableArrayList(courses));
 
-        // Load enrollments
-        List<Enrollment> enrollments = manager.getAllStudents().stream()
-                .flatMap(s -> s.getEnrollments().stream())
-                .collect(Collectors.toList());
-        
-        List<String> enrollmentOptions = enrollments.stream()
+            // Populate enrollment combo for grade assignment
+            List<Enrollment> enrollments = getAllEnrollments();
+            List<String> enrollOpts = enrollments.stream()
                 .map(e -> e.getStudent().getPersonId() + " - " + e.getCourse().getCourseCode())
                 .collect(Collectors.toList());
-        enrollmentCombo.setItems(FXCollections.observableArrayList(enrollmentOptions));
+            enrollmentCombo.setItems(FXCollections.observableArrayList(enrollOpts));
 
-        enrollmentTableView.setItems(FXCollections.observableArrayList(enrollments));
+            // Populate table
+            enrollmentTableView.setItems(FXCollections.observableArrayList(enrollments));
+        });
     }
 
-    private void setStatus(String message, boolean isError) {
-        statusLabel.setText(message);
-        statusLabel.setStyle(isError ? "-fx-text-fill: #e74c3c;" : "-fx-text-fill: #27ae60;");
+    private List<Enrollment> getAllEnrollments() {
+        List<Enrollment> all = new ArrayList<>();
+        manager.getAllStudents().forEach(s -> all.addAll(s.getEnrollments()));
+        return all;
     }
 }

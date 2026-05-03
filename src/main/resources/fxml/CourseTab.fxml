@@ -64,6 +64,8 @@
         <Button text="🔄 Refresh" onAction="#handleRefresh" style="-fx-padding: 8 15;"/>
         <Button text="❌ Remove Selected" onAction="#handleRemoveCourse" style="-fx-padding: 8 15;"/>
         <Button text="📋 View Details" onAction="#handleViewDetails" style="-fx-padding: 8 15;"/>
+        <Separator orientation="VERTICAL"/>
+        <Button text="🔤 Sort by Name" onAction="#handleSortByName" style="-fx-padding: 8 15;"/>
     </HBox>
 
     <!-- Status Label -->

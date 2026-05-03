@@ -69,6 +69,8 @@
     <!-- Bottom Actions -->
     <HBox spacing="10">
         <Button text="🔄 Refresh" onAction="#handleRefresh" style="-fx-padding: 8 15;"/>
+        <Separator orientation="VERTICAL"/>
+        <Button text="🔤 Sort by Student" onAction="#handleSortByStudent" style="-fx-padding: 8 15;"/>
     </HBox>
 
     <!-- Status Label -->
