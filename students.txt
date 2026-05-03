@@ -1,0 +1,2 @@
+studentId,firstName,lastName,email,age,major,yearLevel,gpa
+cs1,irera,jo,irera@gmail.com,20,It,4,0.00

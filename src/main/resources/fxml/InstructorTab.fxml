@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.university.ui.controller.InstructorController"
+      spacing="10" style="-fx-padding: 15;">
+
+    <!-- Input Panel -->
+    <TitledPane text="Add New Instructor" collapsible="false">
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <GridPane hgap="10" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="100"/>
+                    <ColumnConstraints percentWidth="50"/>
+                    <ColumnConstraints prefWidth="100"/>
+                    <ColumnConstraints percentWidth="50"/>
+                </columnConstraints>
+
+                <Label text="Instructor ID:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <TextField fx:id="instructorIdField" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                <Label text="First Name:" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                <TextField fx:id="firstNameField" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+
+                <Label text="Last Name:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <TextField fx:id="lastNameField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                <Label text="Email:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                <TextField fx:id="emailField" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+
+                <Label text="Age:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <Spinner fx:id="ageSpinner" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+                <Label text="Specialization:" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+                <TextField fx:id="specializationField" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+
+                <Label text="Office Location:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <TextField fx:id="officeField" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+                <Label text="Salary:" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
+                <TextField fx:id="salaryField" GridPane.columnIndex="3" GridPane.rowIndex="3"/>
+            </GridPane>
+
+            <HBox spacing="10" style="-fx-padding: 10 0 0 0;">
+                <Button text="➕ Add Instructor" onAction="#handleAddInstructor" style="-fx-padding: 8 20; -fx-font-size: 12; -fx-font-weight: bold;"/>
+                <Button text="Clear" onAction="#handleClear" style="-fx-padding: 8 20;"/>
+            </HBox>
+        </VBox>
+    </TitledPane>
+
+    <!-- Instructor List -->
+    <Label text="Faculty" style="-fx-font-size: 12; -fx-font-weight: bold;"/>
+    <TableView fx:id="instructorTableView" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn text="ID" prefWidth="80" fx:id="idColumn"/>
+            <TableColumn text="Full Name" prefWidth="150" fx:id="nameColumn"/>
+            <TableColumn text="Email" prefWidth="150" fx:id="emailColumn"/>
+            <TableColumn text="Age" prefWidth="50" fx:id="ageColumn"/>
+            <TableColumn text="Specialization" prefWidth="120" fx:id="specializationColumn"/>
+            <TableColumn text="Office" prefWidth="100" fx:id="officeColumn"/>
+            <TableColumn text="Courses" prefWidth="60" fx:id="coursesColumn"/>
+            <TableColumn text="Actions" prefWidth="100" fx:id="actionsColumn"/>
+        </columns>
+    </TableView>
+
+    <!-- Bottom Actions -->
+    <HBox spacing="10">
+        <Button text="🔄 Refresh" onAction="#handleRefresh" style="-fx-padding: 8 15;"/>
+        <Button text="❌ Remove Selected" onAction="#handleRemoveInstructor" style="-fx-padding: 8 15;"/>
+        <Button text="📋 View Details" onAction="#handleViewDetails" style="-fx-padding: 8 15;"/>
+    </HBox>
+
+    <!-- Status Label -->
+    <Label fx:id="statusLabel" text="Ready" style="-fx-font-size: 11; -fx-text-fill: #27ae60;"/>
+</VBox>

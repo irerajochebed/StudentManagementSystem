@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.university.ui.controller.CourseController"
+      spacing="10" style="-fx-padding: 15;">
+
+    <!-- Input Panel -->
+    <TitledPane text="Add New Course" collapsible="false">
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <GridPane hgap="10" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="100"/>
+                    <ColumnConstraints percentWidth="50"/>
+                    <ColumnConstraints prefWidth="100"/>
+                    <ColumnConstraints percentWidth="50"/>
+                </columnConstraints>
+
+                <Label text="Course Code:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <TextField fx:id="courseCodeField" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                <Label text="Course Name:" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                <TextField fx:id="courseNameField" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+
+                <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <TextArea fx:id="descriptionArea" prefRowCount="2" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.columnSpan="3"/>
+
+                <Label text="Credit Hours:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <Spinner fx:id="creditHoursSpinner" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+                <Label text="Max Capacity:" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+                <Spinner fx:id="maxCapacitySpinner" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+
+                <Label text="Semester:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <ComboBox fx:id="semesterCombo" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+            </GridPane>
+
+            <HBox spacing="10" style="-fx-padding: 10 0 0 0;">
+                <Button text="➕ Add Course" onAction="#handleAddCourse" style="-fx-padding: 8 20; -fx-font-size: 12; -fx-font-weight: bold;"/>
+                <Button text="Clear" onAction="#handleClear" style="-fx-padding: 8 20;"/>
+            </HBox>
+        </VBox>
+    </TitledPane>
+
+    <!-- Course List -->
+    <Label text="Available Courses" style="-fx-font-size: 12; -fx-font-weight: bold;"/>
+    <TableView fx:id="courseTableView" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn text="Code" prefWidth="80" fx:id="codeColumn"/>
+            <TableColumn text="Course Name" prefWidth="150" fx:id="nameColumn"/>
+            <TableColumn text="Credits" prefWidth="60" fx:id="creditsColumn"/>
+            <TableColumn text="Semester" prefWidth="80" fx:id="semesterColumn"/>
+            <TableColumn text="Enrolled/Max" prefWidth="100" fx:id="capacityColumn"/>
+            <TableColumn text="Status" prefWidth="80" fx:id="statusColumn"/>
+            <TableColumn text="Actions" prefWidth="100" fx:id="actionsColumn"/>
+        </columns>
+    </TableView>
+
+    <!-- Bottom Actions -->
+    <HBox spacing="10">
+        <Button text="🔄 Refresh" onAction="#handleRefresh" style="-fx-padding: 8 15;"/>
+        <Button text="❌ Remove Selected" onAction="#handleRemoveCourse" style="-fx-padding: 8 15;"/>
+        <Button text="📋 View Details" onAction="#handleViewDetails" style="-fx-padding: 8 15;"/>
+    </HBox>
+
+    <!-- Status Label -->
+    <Label fx:id="statusLabel" text="Ready" style="-fx-font-size: 11; -fx-text-fill: #27ae60;"/>
+</VBox>

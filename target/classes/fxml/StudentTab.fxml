@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.university.ui.controller.StudentController"
+      spacing="10" style="-fx-padding: 15;">
+
+    <!-- Input Panel -->
+    <TitledPane text="Add New Student" collapsible="false">
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <GridPane hgap="10" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="100"/>
+                    <ColumnConstraints percentWidth="50"/>
+                    <ColumnConstraints prefWidth="100"/>
+                    <ColumnConstraints percentWidth="50"/>
+                </columnConstraints>
+
+                <Label text="Student ID:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <TextField fx:id="studentIdField" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                <Label text="First Name:" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                <TextField fx:id="firstNameField" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+
+                <Label text="Last Name:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <TextField fx:id="lastNameField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                <Label text="Email:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                <TextField fx:id="emailField" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+
+                <Label text="Age:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <Spinner fx:id="ageSpinner" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+                <Label text="Major:" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+                <TextField fx:id="majorField" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+
+                <Label text="Year Level:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <ComboBox fx:id="yearLevelCombo" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+            </GridPane>
+
+            <HBox spacing="10" style="-fx-padding: 10 0 0 0;">
+                <Button text="➕ Add Student" onAction="#handleAddStudent" style="-fx-padding: 8 20; -fx-font-size: 12; -fx-font-weight: bold;"/>
+                <Button text="Clear" onAction="#handleClear" style="-fx-padding: 8 20;"/>
+            </HBox>
+        </VBox>
+    </TitledPane>
+
+    <!-- Search Panel -->
+    <HBox spacing="10">
+        <Label text="Search:" style="-fx-font-size: 12;"/>
+        <TextField fx:id="searchField" HBox.hgrow="ALWAYS"
+                   onKeyReleased="#handleSearch" promptText="Search by name..."/>
+        <Button text="🔍 Search" onAction="#handleSearch" style="-fx-padding: 5 15;"/>
+    </HBox>
+
+    <!-- Student List -->
+    <Label text="Registered Students" style="-fx-font-size: 12; -fx-font-weight: bold;"/>
+    <TableView fx:id="studentTableView" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn text="ID" prefWidth="80" fx:id="idColumn"/>
+            <TableColumn text="Full Name" prefWidth="150" fx:id="nameColumn"/>
+            <TableColumn text="Email" prefWidth="150" fx:id="emailColumn"/>
+            <TableColumn text="Age" prefWidth="50" fx:id="ageColumn"/>
+            <TableColumn text="Major" prefWidth="100" fx:id="majorColumn"/>
+            <TableColumn text="Year" prefWidth="60" fx:id="yearColumn"/>
+            <TableColumn text="GPA" prefWidth="60" fx:id="gpaColumn"/>
+            <TableColumn text="Actions" prefWidth="100" fx:id="actionsColumn"/>
+        </columns>
+    </TableView>
+
+    <!-- Bottom Actions -->
+    <HBox spacing="10">
+        <Button text="🔄 Refresh" onAction="#handleRefresh" style="-fx-padding: 8 15;"/>
+        <Button text="❌ Remove Selected" onAction="#handleRemoveStudent" style="-fx-padding: 8 15;"/>
+        <Button text="📋 View Details" onAction="#handleViewDetails" style="-fx-padding: 8 15;"/>
+    </HBox>
+
+    <!-- Status Label -->
+    <Label fx:id="statusLabel" text="Ready" style="-fx-font-size: 11; -fx-text-fill: #27ae60;"/>
+</VBox>

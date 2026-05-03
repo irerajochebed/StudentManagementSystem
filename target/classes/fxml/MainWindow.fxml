@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.university.ui.controller.MainController">
+
+    <!-- Top: Menu Bar and Title -->
+    <top>
+        <VBox spacing="10" style="-fx-background-color: #2c3e50; -fx-padding: 10;">
+            <Label text="🎓 University Student Management System v2.0"
+                   style="-fx-font-size: 18; -fx-text-fill: #ecf0f1; -fx-font-weight: bold;"/>
+            <HBox spacing="5" style="-fx-padding: 5;">
+                <Button text="Save Data" onAction="#handleSaveData" style="-fx-padding: 8 15;"/>
+                <Button text="Load Data" onAction="#handleLoadData" style="-fx-padding: 8 15;"/>
+                <Button text="Clear All" onAction="#handleClearAll" style="-fx-padding: 8 15;"/>
+                <Separator orientation="VERTICAL"/>
+                <Button text="About" onAction="#handleAbout" style="-fx-padding: 8 15;"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- Center: Tabbed Interface -->
+    <center>
+        <TabPane fx:id="mainTabPane" tabClosingPolicy="UNAVAILABLE">
+            <Tab text="📊 Dashboard" fx:id="dashboardTab">
+                <fx:include source="DashboardTab.fxml"/>
+            </Tab>
+            <Tab text="👥 Students" fx:id="studentTab">
+                <fx:include source="StudentTab.fxml"/>
+            </Tab>
+            <Tab text="📚 Courses" fx:id="courseTab">
+                <fx:include source="CourseTab.fxml"/>
+            </Tab>
+            <Tab text="👨‍🏫 Instructors" fx:id="instructorTab">
+                <fx:include source="InstructorTab.fxml"/>
+            </Tab>
+            <Tab text="📋 Enrollments" fx:id="enrollmentTab">
+                <fx:include source="EnrollmentTab.fxml"/>
+            </Tab>
+        </TabPane>
+    </center>
+
+    <!-- Bottom: Status Bar -->
+    <bottom>
+        <HBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 10;">
+            <Label fx:id="statusLabel" text="Ready" style="-fx-font-size: 12;"/>
+            <Separator orientation="VERTICAL"/>
+            <Label fx:id="statsLabel" text="Loading statistics..."
+                   style="-fx-font-size: 12; -fx-text-fill: #2980b9;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label text="© 2026 University Management" style="-fx-font-size: 10; -fx-text-fill: #7f8c8d;"/>
+        </HBox>
+    </bottom>
+</BorderPane>

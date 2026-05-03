@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.university.ui.controller.DashboardController"
+      spacing="15" style="-fx-padding: 15;">
+
+    <Label text="System Overview" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+
+    <GridPane hgap="15" vgap="15">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="25"/>
+            <ColumnConstraints percentWidth="25"/>
+            <ColumnConstraints percentWidth="25"/>
+            <ColumnConstraints percentWidth="25"/>
+        </columnConstraints>
+
+        <!-- Total Students Card -->
+        <VBox GridPane.columnIndex="0" style="-fx-border-color: #3498db; -fx-border-width: 2; -fx-padding: 15; -fx-border-radius: 5;">
+            <Label text="Total Students" style="-fx-font-size: 12; -fx-text-fill: #7f8c8d;"/>
+            <Label fx:id="totalStudentsLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #3498db;"/>
+        </VBox>
+
+        <!-- Total Courses Card -->
+        <VBox GridPane.columnIndex="1" style="-fx-border-color: #2ecc71; -fx-border-width: 2; -fx-padding: 15; -fx-border-radius: 5;">
+            <Label text="Total Courses" style="-fx-font-size: 12; -fx-text-fill: #7f8c8d;"/>
+            <Label fx:id="totalCoursesLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #2ecc71;"/>
+        </VBox>
+
+        <!-- Total Instructors Card -->
+        <VBox GridPane.columnIndex="2" style="-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-padding: 15; -fx-border-radius: 5;">
+            <Label text="Total Instructors" style="-fx-font-size: 12; -fx-text-fill: #7f8c8d;"/>
+            <Label fx:id="totalInstructorsLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #e74c3c;"/>
+        </VBox>
+
+        <!-- Average GPA Card -->
+        <VBox GridPane.columnIndex="3" style="-fx-border-color: #f39c12; -fx-border-width: 2; -fx-padding: 15; -fx-border-radius: 5;">
+            <Label text="Avg Student GPA" style="-fx-font-size: 12; -fx-text-fill: #7f8c8d;"/>
+            <Label fx:id="avgGPALabel" text="0.00" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #f39c12;"/>
+        </VBox>
+    </GridPane>
+
+    <Separator/>
+
+    <Label text="Recent Activity" style="-fx-font-size: 14; -fx-font-weight: bold;"/>
+
+    <TextArea fx:id="activityTextArea" wrapText="true" editable="false" style="-fx-font-size: 11;"/>
+
+    <HBox spacing="10">
+        <Button text="Refresh Dashboard" onAction="#handleRefresh" style="-fx-padding: 8 15;"/>
+        <Button text="Clear Activity Log" onAction="#handleClearLog" style="-fx-padding: 8 15;"/>
+    </HBox>
+
+</VBox>

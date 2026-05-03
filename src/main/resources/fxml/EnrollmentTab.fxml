@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.university.ui.controller.EnrollmentController"
+      spacing="10" style="-fx-padding: 15;">
+
+    <!-- Enrollment Panel -->
+    <TitledPane text="Enroll Student in Course" collapsible="false">
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <GridPane hgap="10" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="100"/>
+                    <ColumnConstraints percentWidth="100"/>
+                </columnConstraints>
+
+                <Label text="Select Student:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <ComboBox fx:id="studentCombo" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                <Label text="Select Course:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <ComboBox fx:id="courseCombo" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            </GridPane>
+
+            <HBox spacing="10" style="-fx-padding: 10 0 0 0;">
+                <Button text="✓ Enroll Student" onAction="#handleEnroll" style="-fx-padding: 8 20; -fx-font-size: 12; -fx-font-weight: bold;"/>
+            </HBox>
+        </VBox>
+    </TitledPane>
+
+    <!-- Grade Assignment Panel -->
+    <TitledPane text="Assign Grade" collapsible="false">
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <GridPane hgap="10" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="100"/>
+                    <ColumnConstraints percentWidth="100"/>
+                </columnConstraints>
+
+                <Label text="Enrollment:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <ComboBox fx:id="enrollmentCombo" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                <Label text="Grade Points (0.0-4.0):" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <Spinner fx:id="gradeSpinner" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            </GridPane>
+
+            <HBox spacing="10" style="-fx-padding: 10 0 0 0;">
+                <Button text="✓ Assign Grade" onAction="#handleAssignGrade" style="-fx-padding: 8 20; -fx-font-size: 12; -fx-font-weight: bold;"/>
+            </HBox>
+        </VBox>
+    </TitledPane>
+
+    <!-- Enrollment List -->
+    <Label text="All Enrollments" style="-fx-font-size: 12; -fx-font-weight: bold;"/>
+    <TableView fx:id="enrollmentTableView" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn text="Student Name" prefWidth="150" fx:id="studentColumn"/>
+            <TableColumn text="Course Code" prefWidth="100" fx:id="courseCodeColumn"/>
+            <TableColumn text="Course Name" prefWidth="150" fx:id="courseNameColumn"/>
+            <TableColumn text="Enrollment Date" prefWidth="120" fx:id="dateColumn"/>
+            <TableColumn text="Status" prefWidth="80" fx:id="statusColumn"/>
+            <TableColumn text="Grade" prefWidth="60" fx:id="gradeColumn"/>
+            <TableColumn text="Letter Grade" prefWidth="80" fx:id="letterGradeColumn"/>
+        </columns>
+    </TableView>
+
+    <!-- Bottom Actions -->
+    <HBox spacing="10">
+        <Button text="🔄 Refresh" onAction="#handleRefresh" style="-fx-padding: 8 15;"/>
+    </HBox>
+
+    <!-- Status Label -->
+    <Label fx:id="statusLabel" text="Ready" style="-fx-font-size: 11; -fx-text-fill: #27ae60;"/>
+</VBox>
