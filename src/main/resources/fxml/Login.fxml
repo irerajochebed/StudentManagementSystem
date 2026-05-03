@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.university.ui.controller.LoginController"
+      alignment="CENTER" spacing="20" styleClass="login-container">
+    
+    <padding>
+        <Insets top="50" right="50" bottom="50" left="50"/>
+    </padding>
+
+    <Label text="University Management System" styleClass="login-title">
+        <font>
+            <Font name="System Bold" size="24"/>
+        </font>
+    </Label>
+
+    <Label text="Login" styleClass="login-subtitle">
+        <font>
+            <Font size="18"/>
+        </font>
+    </Label>
+
+    <VBox spacing="10" maxWidth="300">
+        <Label text="Username:"/>
+        <TextField fx:id="usernameField" promptText="Enter username"/>
+
+        <Label text="Password:">
+            <VBox.margin>
+                <Insets top="10"/>
+            </VBox.margin>
+        </Label>
+        <PasswordField fx:id="passwordField" promptText="Enter password"/>
+
+        <Label fx:id="errorLabel" textFill="red" wrapText="true" visible="false"/>
+
+        <HBox spacing="10" alignment="CENTER">
+            <VBox.margin>
+                <Insets top="20"/>
+            </VBox.margin>
+            <Button text="Login" onAction="#handleLogin" prefWidth="140" styleClass="primary-button"/>
+            <Button text="Register" onAction="#handleRegister" prefWidth="140" styleClass="secondary-button"/>
+        </HBox>
+    </VBox>
+</VBox>

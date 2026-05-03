@@ -3,6 +3,7 @@ package com.university.ui.controller;
 import com.university.app.StudentManagementApp;
 import com.university.backend.manager.StudentManagementManager;
 import com.university.backend.model.Enrollment;
+import com.university.backend.model.User;
 import com.university.ui.component.StatusLabel;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -27,10 +28,12 @@ public class EnrollmentController implements Initializable {
     // ── Enroll section ────────────────────────────────────────────
     @FXML private ComboBox<String> studentCombo;
     @FXML private ComboBox<String> courseCombo;
+    @FXML private Button enrollButton;
 
     // ── Grade section ─────────────────────────────────────────────
     @FXML private ComboBox<String>  enrollmentCombo;
     @FXML private Spinner<Double>   gradeSpinner;
+    @FXML private Button assignGradeButton;
 
     // ── Table ─────────────────────────────────────────────────────
     @FXML private TableView<Enrollment>            enrollmentTableView;
@@ -71,7 +74,35 @@ public class EnrollmentController implements Initializable {
         letterGradeColumn.setCellValueFactory(d ->
             new SimpleStringProperty(d.getValue().getLetterGrade()));
 
+        configureRoleBasedAccess();
         refreshAll();
+    }
+
+    private void configureRoleBasedAccess() {
+        User currentUser = StudentManagementApp.getAuthManager().getCurrentUser();
+        if (currentUser == null) return;
+
+        User.UserRole role = currentUser.getRole();
+
+        if (role == User.UserRole.ADMIN) {
+            return;
+        }
+
+        if (role == User.UserRole.INSTRUCTOR) {
+            if (enrollButton != null) enrollButton.setDisable(true);
+            if (studentCombo != null) studentCombo.setDisable(true);
+            if (courseCombo != null) courseCombo.setDisable(true);
+            return;
+        }
+
+        if (role == User.UserRole.STUDENT) {
+            if (enrollButton != null) enrollButton.setDisable(true);
+            if (assignGradeButton != null) assignGradeButton.setDisable(true);
+            if (studentCombo != null) studentCombo.setDisable(true);
+            if (courseCombo != null) courseCombo.setDisable(true);
+            if (enrollmentCombo != null) enrollmentCombo.setDisable(true);
+            if (gradeSpinner != null) gradeSpinner.setDisable(true);
+        }
     }
 
     // ── ENROLL ───────────────────────────────────────────────────
@@ -140,27 +171,34 @@ public class EnrollmentController implements Initializable {
 
     // ── Helpers ───────────────────────────────────────────────────
     private void refreshAll() {
+        User currentUser = StudentManagementApp.getAuthManager().getCurrentUser();
+        boolean isStudent = currentUser != null && currentUser.getRole() == User.UserRole.STUDENT;
+        String studentId = isStudent ? currentUser.getLinkedId() : null;
+        
         Platform.runLater(() -> {
-            // Populate student combo: "ID - Full Name"
             List<String> students = manager.getAllStudents().stream()
                 .map(s -> s.getPersonId() + " - " + s.getFullName())
                 .collect(Collectors.toList());
             studentCombo.setItems(FXCollections.observableArrayList(students));
 
-            // Populate course combo: "Code - Name"
             List<String> courses = manager.getAllCourses().stream()
                 .map(c -> c.getCourseCode() + " - " + c.getCourseName())
                 .collect(Collectors.toList());
             courseCombo.setItems(FXCollections.observableArrayList(courses));
 
-            // Populate enrollment combo for grade assignment
             List<Enrollment> enrollments = getAllEnrollments();
+            
+            if (isStudent && studentId != null) {
+                enrollments = enrollments.stream()
+                    .filter(e -> e.getStudent().getPersonId().equals(studentId))
+                    .collect(Collectors.toList());
+            }
+            
             List<String> enrollOpts = enrollments.stream()
                 .map(e -> e.getStudent().getPersonId() + " - " + e.getCourse().getCourseCode())
                 .collect(Collectors.toList());
             enrollmentCombo.setItems(FXCollections.observableArrayList(enrollOpts));
 
-            // Populate table
             enrollmentTableView.setItems(FXCollections.observableArrayList(enrollments));
         });
     }

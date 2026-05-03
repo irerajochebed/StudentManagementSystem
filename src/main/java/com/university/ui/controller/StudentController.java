@@ -4,6 +4,7 @@ import com.university.app.StudentManagementApp;
 import com.university.backend.exception.StudentManagementException;
 import com.university.backend.manager.StudentManagementManager;
 import com.university.backend.model.Student;
+import com.university.backend.model.User;
 import com.university.ui.component.StatusLabel;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -35,6 +36,9 @@ public class StudentController implements Initializable {
     @FXML private Spinner<Integer> ageSpinner;
     @FXML private TextField majorField;
     @FXML private ComboBox<Integer> yearLevelCombo;
+    @FXML private Button addButton;
+    @FXML private Button removeButton;
+    @FXML private Button clearButton;
 
     // ── Search ─────────────────────────────────────────────────────
     @FXML private TextField searchField;
@@ -78,7 +82,27 @@ public class StudentController implements Initializable {
         yearColumn.setCellValueFactory(new PropertyValueFactory<>("yearLevel"));
         gpaColumn.setCellValueFactory(new PropertyValueFactory<>("gpa"));
 
+        configureRoleBasedAccess();
         refreshTable();
+    }
+
+    private void configureRoleBasedAccess() {
+        User currentUser = StudentManagementApp.getAuthManager().getCurrentUser();
+        if (currentUser == null) return;
+
+        // Only ADMIN can add/remove students
+        if (currentUser.getRole() != User.UserRole.ADMIN) {
+            if (addButton != null) addButton.setDisable(true);
+            if (removeButton != null) removeButton.setDisable(true);
+            if (clearButton != null) clearButton.setDisable(true);
+            studentIdField.setDisable(true);
+            firstNameField.setDisable(true);
+            lastNameField.setDisable(true);
+            emailField.setDisable(true);
+            ageSpinner.setDisable(true);
+            majorField.setDisable(true);
+            yearLevelCombo.setDisable(true);
+        }
     }
 
     // ── ADD ────────────────────────────────────────────────────────

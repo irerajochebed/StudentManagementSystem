@@ -4,6 +4,7 @@ import com.university.app.StudentManagementApp;
 import com.university.backend.exception.StudentManagementException;
 import com.university.backend.manager.StudentManagementManager;
 import com.university.backend.model.Course;
+import com.university.backend.model.User;
 import com.university.ui.component.StatusLabel;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -30,6 +31,9 @@ public class CourseController implements Initializable {
     @FXML private Spinner<Integer> creditHoursSpinner;
     @FXML private Spinner<Integer> maxCapacitySpinner;
     @FXML private ComboBox<String> semesterCombo;
+    @FXML private Button addButton;
+    @FXML private Button removeButton;
+    @FXML private Button clearButton;
 
     @FXML private TableView<Course>            courseTableView;
     @FXML private TableColumn<Course, String>  codeColumn;
@@ -68,7 +72,25 @@ public class CourseController implements Initializable {
         statusColumn.setCellValueFactory(d ->
             new SimpleStringProperty(d.getValue().isFull() ? "FULL" : "OPEN"));
 
+        configureRoleBasedAccess();
         refreshTable();
+    }
+
+    private void configureRoleBasedAccess() {
+        User currentUser = StudentManagementApp.getAuthManager().getCurrentUser();
+        if (currentUser == null) return;
+
+        if (currentUser.getRole() != User.UserRole.ADMIN) {
+            if (addButton != null) addButton.setDisable(true);
+            if (removeButton != null) removeButton.setDisable(true);
+            if (clearButton != null) clearButton.setDisable(true);
+            courseCodeField.setDisable(true);
+            courseNameField.setDisable(true);
+            descriptionArea.setDisable(true);
+            creditHoursSpinner.setDisable(true);
+            maxCapacitySpinner.setDisable(true);
+            semesterCombo.setDisable(true);
+        }
     }
 
     // ── ADD ───────────────────────────────────────────────────────

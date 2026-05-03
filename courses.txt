@@ -1,2 +1,0 @@
-courseCode,courseName,description,creditHours,maxCapacity,semester
-cs1,Bigdata,ICT,4,20,sem 3

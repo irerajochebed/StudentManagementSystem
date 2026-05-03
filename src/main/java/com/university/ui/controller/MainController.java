@@ -2,11 +2,16 @@ package com.university.ui.controller;
 
 import com.university.app.StudentManagementApp;
 import com.university.backend.manager.StudentManagementManager;
+import com.university.backend.model.User;
 import com.university.ui.component.StatusLabel;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.Optional;
@@ -21,6 +26,11 @@ public class MainController implements Initializable {
     @FXML private TabPane mainTabPane;
     @FXML private Label   statusLabel;
     @FXML private Label   statsLabel;
+    @FXML private Label   userInfoLabel;
+    @FXML private Tab     studentTab;
+    @FXML private Tab     courseTab;
+    @FXML private Tab     instructorTab;
+    @FXML private Tab     enrollmentTab;
 
     private StudentManagementManager manager;
     private StatusLabel status;
@@ -30,13 +40,44 @@ public class MainController implements Initializable {
         manager = StudentManagementApp.getManager();
         status  = new StatusLabel(statusLabel);
         updateStats();
+        configureRoleBasedAccess();
+    }
+
+    private void configureRoleBasedAccess() {
+        User currentUser = StudentManagementApp.getAuthManager().getCurrentUser();
+        if (currentUser == null) return;
+
+        if (userInfoLabel != null) {
+            userInfoLabel.setText("Logged in as: " + currentUser.getUsername() + 
+                                " (" + currentUser.getRole() + ")");
+        }
+
+        User.UserRole role = currentUser.getRole();
+        
+        // ADMIN sees everything
+        if (role == User.UserRole.ADMIN) {
+            return;
+        }
+        
+        // INSTRUCTOR can see courses and enrollments only
+        if (role == User.UserRole.INSTRUCTOR) {
+            mainTabPane.getTabs().remove(studentTab);
+            mainTabPane.getTabs().remove(instructorTab);
+            return;
+        }
+        
+        // STUDENT can see courses and their enrollments only
+        if (role == User.UserRole.STUDENT) {
+            mainTabPane.getTabs().remove(instructorTab);
+            mainTabPane.getTabs().remove(studentTab);
+        }
     }
 
     // ── SAVE ──────────────────────────────────────────────────────
     @FXML
     private void handleSaveData() {
         try {
-            StudentManagementApp.getFileIOHandler().saveManager(manager);
+            StudentManagementApp.getFileIOHandler().saveManager(manager, StudentManagementApp.getAuthManager());
             Platform.runLater(() -> {
                 status.success("Data saved to /data folder.");
                 updateStats();
@@ -50,7 +91,7 @@ public class MainController implements Initializable {
     @FXML
     private void handleLoadData() {
         try {
-            StudentManagementApp.getFileIOHandler().loadDataIntoManager(manager);
+            StudentManagementApp.getFileIOHandler().loadDataIntoManager(manager, StudentManagementApp.getAuthManager());
             Platform.runLater(() -> {
                 status.success("Data loaded successfully.");
                 updateStats();
@@ -94,10 +135,33 @@ public class MainController implements Initializable {
             "  • Collections — ArrayList for data storage\n" +
             "  • Exception Handling — custom exceptions\n" +
             "  • File I/O — CSV save and load\n" +
-            "  • JavaFX UI — FXML + Controllers\n\n" +
+            "  • JavaFX UI — FXML + Controllers\n" +
+            "  • Authentication & Authorization\n\n" +
             "UI layer calls backend only — no business logic in controllers."
         );
         about.showAndWait();
+    }
+
+    // ── LOGOUT ────────────────────────────────────────────────────
+    @FXML
+    private void handleLogout() {
+        StudentManagementApp.getAuthManager().logout();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
+            Parent root = loader.load();
+            
+            Stage stage = (Stage) statusLabel.getScene().getWindow();
+            Scene scene = new Scene(root);
+            String css = getClass().getResource("/css/styles.css").toExternalForm();
+            scene.getStylesheets().add(css);
+            
+            stage.setScene(scene);
+            stage.setTitle("Login - University Student Management System");
+            stage.setWidth(500);
+            stage.setHeight(450);
+        } catch (Exception e) {
+            status.error("Logout failed: " + e.getMessage());
+        }
     }
 
     // ── Helper ────────────────────────────────────────────────────

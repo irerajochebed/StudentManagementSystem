@@ -1,6 +1,7 @@
 package com.university.app;
 
 import com.university.backend.manager.StudentManagementManager;
+import com.university.backend.manager.AuthenticationManager;
 import com.university.util.FileIOHandler;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -18,6 +19,7 @@ public class StudentManagementApp extends Application {
 
     private static StudentManagementManager manager;
     private static FileIOHandler fileIOHandler;
+    private static AuthenticationManager authManager;
 
     public static void main(String[] args) {
         launch(args);
@@ -28,19 +30,20 @@ public class StudentManagementApp extends Application {
         // Initialize backend
         manager = new StudentManagementManager();
         fileIOHandler = new FileIOHandler();
+        authManager = new AuthenticationManager();
 
         // Load existing data
-        fileIOHandler.loadDataIntoManager(manager);
+        fileIOHandler.loadDataIntoManager(manager, authManager);
 
-        // Load FXML and create scene
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/MainWindow.fxml"));
+        // Load login screen first
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
         javafx.scene.Parent root = loader.load();
 
         // Setup scene and stage
         Scene scene = new Scene(root);
-        primaryStage.setTitle("University Student Management System v2.0");
-        primaryStage.setWidth(1200);
-        primaryStage.setHeight(700);
+        primaryStage.setTitle("Login - University Student Management System");
+        primaryStage.setWidth(500);
+        primaryStage.setHeight(450);
         primaryStage.setScene(scene);
 
         // Add CSS styling
@@ -53,8 +56,8 @@ public class StudentManagementApp extends Application {
     @Override
     public void stop() {
         // Save data before closing
-        if (manager != null && fileIOHandler != null) {
-            fileIOHandler.saveManager(manager);
+        if (manager != null && fileIOHandler != null && authManager != null) {
+            fileIOHandler.saveManager(manager, authManager);
         }
     }
 
@@ -66,9 +69,13 @@ public class StudentManagementApp extends Application {
         return fileIOHandler;
     }
 
+    public static AuthenticationManager getAuthManager() {
+        return authManager;
+    }
+
     /** Resets the manager to a fresh empty state (used by Clear All). */
     public static void resetManager() {
         manager = new StudentManagementManager();
-        if (fileIOHandler != null) fileIOHandler.saveManager(manager);
+        if (fileIOHandler != null && authManager != null) fileIOHandler.saveManager(manager, authManager);
     }
 }

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.university.ui.controller.RegisterController"
+      alignment="CENTER" spacing="20" styleClass="login-container">
+    
+    <padding>
+        <Insets top="30" right="50" bottom="30" left="50"/>
+    </padding>
+
+    <Label text="Create New Account" styleClass="login-title">
+        <font>
+            <Font name="System Bold" size="22"/>
+        </font>
+    </Label>
+
+    <VBox spacing="10" maxWidth="350">
+        <Label text="Username:"/>
+        <TextField fx:id="usernameField" promptText="Choose username"/>
+
+        <Label text="Password:">
+            <VBox.margin>
+                <Insets top="5"/>
+            </VBox.margin>
+        </Label>
+        <PasswordField fx:id="passwordField" promptText="Choose password"/>
+
+        <Label text="Confirm Password:">
+            <VBox.margin>
+                <Insets top="5"/>
+            </VBox.margin>
+        </Label>
+        <PasswordField fx:id="confirmPasswordField" promptText="Re-enter password"/>
+
+        <Label text="Role:">
+            <VBox.margin>
+                <Insets top="5"/>
+            </VBox.margin>
+        </Label>
+        <ComboBox fx:id="roleComboBox" prefWidth="350" promptText="Select role"/>
+
+        <Label text="Linked ID (Student/Instructor ID):">
+            <VBox.margin>
+                <Insets top="5"/>
+            </VBox.margin>
+        </Label>
+        <TextField fx:id="linkedIdField" promptText="Enter your ID (optional for admin)"/>
+
+        <Label fx:id="messageLabel" wrapText="true" visible="false">
+            <VBox.margin>
+                <Insets top="10"/>
+            </VBox.margin>
+        </Label>
+
+        <HBox spacing="10" alignment="CENTER">
+            <VBox.margin>
+                <Insets top="15"/>
+            </VBox.margin>
+            <Button text="Register" onAction="#handleRegister" prefWidth="165" styleClass="primary-button"/>
+            <Button text="Back to Login" onAction="#handleBackToLogin" prefWidth="165" styleClass="secondary-button"/>
+        </HBox>
+    </VBox>
+</VBox>

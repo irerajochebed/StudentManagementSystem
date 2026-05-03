@@ -1,6 +1,7 @@
 package com.university.util;
 
 import com.university.backend.manager.StudentManagementManager;
+import com.university.backend.manager.AuthenticationManager;
 import com.university.backend.model.*;
 import java.io.*;
 import java.nio.file.Files;
@@ -19,6 +20,7 @@ public class FileIOHandler {
     private static final String COURSES_FILE = DATA_DIR + "/courses.csv";
     private static final String INSTRUCTORS_FILE = DATA_DIR + "/instructors.csv";
     private static final String ENROLLMENTS_FILE = DATA_DIR + "/enrollments.csv";
+    private static final String USERS_FILE = DATA_DIR + "/users.csv";
 
     public FileIOHandler() {
         createDataDirectory();
@@ -36,6 +38,13 @@ public class FileIOHandler {
     }
 
     // ==================== SAVE OPERATIONS ====================
+    public void saveManager(StudentManagementManager manager, AuthenticationManager authManager) {
+        saveStudents(manager.getAllStudents());
+        saveCourses(manager.getAllCourses());
+        saveInstructors(manager.getAllInstructors());
+        saveUsers(authManager);
+    }
+
     public void saveManager(StudentManagementManager manager) {
         saveStudents(manager.getAllStudents());
         saveCourses(manager.getAllCourses());
@@ -99,7 +108,30 @@ public class FileIOHandler {
         }
     }
 
+    public void saveUsers(AuthenticationManager authManager) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(USERS_FILE))) {
+            writer.println("Username,Password,Role,LinkedId");
+            for (User user : authManager.getAllUsers().values()) {
+                writer.printf("%s,%s,%s,%s%n",
+                        user.getUsername(),
+                        user.getPassword(),
+                        user.getRole().name(),
+                        user.getLinkedId() == null ? "" : user.getLinkedId()
+                );
+            }
+        } catch (IOException e) {
+            System.err.println("Error saving users: " + e.getMessage());
+        }
+    }
+
     // ==================== LOAD OPERATIONS ====================
+    public void loadDataIntoManager(StudentManagementManager manager, AuthenticationManager authManager) {
+        loadStudents(manager);
+        loadCourses(manager);
+        loadInstructors(manager);
+        loadUsers(authManager);
+    }
+
     public void loadDataIntoManager(StudentManagementManager manager) {
         loadStudents(manager);
         loadCourses(manager);
@@ -187,6 +219,34 @@ public class FileIOHandler {
             }
         } catch (IOException e) {
             System.err.println("Instructors file not found or error reading: " + e.getMessage());
+        }
+    }
+
+    public void loadUsers(AuthenticationManager authManager) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(USERS_FILE))) {
+            String line;
+            reader.readLine(); // Skip header
+            Map<String, User> users = new HashMap<>();
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",", 4);
+                if (parts.length >= 3) {
+                    try {
+                        String linkedId = parts.length == 4 && !parts[3].isEmpty() ? parts[3] : null;
+                        User user = new User(
+                                parts[0], // Username
+                                parts[1], // Password
+                                User.UserRole.valueOf(parts[2]), // Role
+                                linkedId  // LinkedId
+                        );
+                        users.put(user.getUsername(), user);
+                    } catch (Exception e) {
+                        System.err.println("Error parsing user line: " + line + " - " + e.getMessage());
+                    }
+                }
+            }
+            authManager.setUsers(users);
+        } catch (IOException e) {
+            System.err.println("Users file not found, using default admin account");
         }
     }
 }

@@ -10,8 +10,13 @@
     <!-- Top: Menu Bar and Title -->
     <top>
         <VBox spacing="10" style="-fx-background-color: #2c3e50; -fx-padding: 10;">
-            <Label text="🎓 University Student Management System v2.0"
-                   style="-fx-font-size: 18; -fx-text-fill: #ecf0f1; -fx-font-weight: bold;"/>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="🎓 University Student Management System v2.0"
+                       style="-fx-font-size: 18; -fx-text-fill: #ecf0f1; -fx-font-weight: bold;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="userInfoLabel" text="" style="-fx-text-fill: #ecf0f1; -fx-font-size: 12;"/>
+                <Button text="Logout" onAction="#handleLogout" style="-fx-padding: 5 10;"/>
+            </HBox>
             <HBox spacing="5" style="-fx-padding: 5;">
                 <Button text="Save Data" onAction="#handleSaveData" style="-fx-padding: 8 15;"/>
                 <Button text="Load Data" onAction="#handleLoadData" style="-fx-padding: 8 15;"/>

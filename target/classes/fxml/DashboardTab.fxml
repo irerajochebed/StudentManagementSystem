@@ -54,4 +54,6 @@
         <Button text="Clear Activity Log" onAction="#handleClearLog" style="-fx-padding: 8 15;"/>
     </HBox>
 
+    <Label fx:id="statusLabel" text="Ready" style="-fx-font-size: 11;"/>
+
 </VBox>
